@@ -2,14 +2,12 @@ package fi.smaa.glei;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class LogGARCHDensityFunctionTest {
 
 	@Test
-	@Ignore
 	public void testValueWithNalansExample() {
 		int p = 3;
 		int q = 2;
@@ -18,6 +16,6 @@ public class LogGARCHDensityFunctionTest {
 		
 		
 		LogGARCHDensityFunction fn = new LogGARCHDensityFunction(p, q, data);
-		assertEquals(-3.609036, fn.value(pt), 0.0001);
+		assertEquals(-3.730027, fn.value(pt), 0.0001);
 	}
 }

@@ -52,11 +52,11 @@ public class LogGARCHDensityFunction extends AbstractDimFunction {
 		for (int t=tStar;t<data.length;t++) {
 			double alphaSum = 0.0;
 			for (int i=0;i<p;i++) {
-				alphaSum += point[i] * Math.pow(data[t-i], 2.0); 
+				alphaSum += point[i] * Math.pow(data[t-i-1], 2.0); 
 			}
 			double betaSum = 0.0;
 			for (int j=0;j<q;j++) {
-				betaSum += point[p+j] * h[t-j];
+				betaSum += point[p+j] * h[t-j-1];
 			}
 			h[t] = sigmaSq + alphaSum + betaSum;
 		}
