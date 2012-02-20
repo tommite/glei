@@ -1,5 +1,10 @@
 package fi.smaa.glei;
 
+import java.util.Arrays;
+
+import cern.colt.list.DoubleArrayList;
+import cern.jet.stat.Descriptive;
+
 
 
 public class LogGARCHDensityFunction extends AbstractDimFunction {
@@ -31,13 +36,10 @@ public class LogGARCHDensityFunction extends AbstractDimFunction {
 	private void initHt() {
 		h = new double[data.length];
 		
-		double meanYtSq = 0.0;
-		for (int t=0;t<data.length;t++) {
-			meanYtSq += (data[t] * data[t]);
-		}
-		meanYtSq /= data.length;
+		DoubleArrayList datalist = new DoubleArrayList(data);
+		double sampleVariance = Descriptive.sampleVariance(datalist, Descriptive.mean(datalist));
 		for (int i=0;i<tStar;i++) {
-			h[i] = meanYtSq;
+			h[i] = sampleVariance;
 		}
 	}
 
