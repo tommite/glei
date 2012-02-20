@@ -40,7 +40,7 @@ public class MultivariateStudentTSamplerTest {
 		assertEquals(-3.0, v1mean, 0.3);
 		double v2mean = Descriptive.mean(v2);
 		assertEquals(1.0, v2mean, 0.1);
-		assertEquals(0.02, Descriptive.sampleVariance(v1, v1mean), 0.01);
+		assertEquals(0.02, Descriptive.sampleVariance(v1, v1mean), 0.02);
 		assertEquals(0.01, Descriptive.sampleVariance(v2, v2mean), 0.01);
 		assertEquals(0.01, Descriptive.covariance(v1, v2), 0.005);
 	}

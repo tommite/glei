@@ -4,7 +4,6 @@ import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.CholeskyDecomposition;
-import cern.jet.math.PlusMult;
 import cern.jet.random.ChiSquare;
 import cern.jet.random.Normal;
 import cern.jet.random.engine.RandomEngine;
@@ -53,11 +52,10 @@ public class MultivariateStudentTSampler implements MultiDimensionalSampler{
 			thetaStdnorm.set(i, normal01Sampler.nextDouble());
 		}
 		DoubleMatrix1D thetaNorm = sigmaChol.zMult(thetaStdnorm, null, 1.0, 1.0, true);
-		thetaNorm.assign(mu, PlusMult.plusMult(1.0));
 		
 		for (int i=0;i<p;i++) {
 			double thetaChi = chisqSampler.nextDouble();
-			lastSample[i] = thetaNorm.get(i) / Math.sqrt(thetaChi / n);
+			lastSample[i] = thetaNorm.get(i) / Math.sqrt(thetaChi / n) + mu.get(i);
 		}
 		return lastSample;
 	}
