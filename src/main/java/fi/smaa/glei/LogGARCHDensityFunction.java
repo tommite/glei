@@ -1,7 +1,5 @@
 package fi.smaa.glei;
 
-import java.util.Arrays;
-
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
