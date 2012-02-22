@@ -13,7 +13,7 @@ public class EqualFunction implements MultiOutputFunction {
 		return at;
 	}
 
-	public int dimension() {
+	public int inputDimension() {
 		return dim;
 	}
 

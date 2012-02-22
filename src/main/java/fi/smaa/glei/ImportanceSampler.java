@@ -32,7 +32,7 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 	 * @param nrDraws the number of draws
 	 */
 	public ImportanceSampler(Function lnG, Function lnF, MultiOutputFunction H, int nrDraws, MultiDimensionalSampler gSampler) {
-		if (lnG.dimension() != lnF.dimension() || lnF.dimension() != H.dimension()) {
+		if (lnG.dimension() != lnF.dimension() || lnF.dimension() != H.inputDimension()) {
 			throw new IllegalArgumentException("PRECOND violation: functions with differing dimensions");
 		}
 		this.lnG = lnG;
