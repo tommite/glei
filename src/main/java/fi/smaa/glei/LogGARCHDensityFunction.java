@@ -45,6 +45,16 @@ public class LogGARCHDensityFunction extends AbstractDimFunction {
 	 * Evaluate s.t. point has the alpha-components and then the beta-ones.
 	 */
 	protected double evaluate(double[] point) {
+		double pSum = 0.0;
+		for (int i=0;i<point.length;i++) {
+			if (point[i] < 0.0) {
+				return Double.NEGATIVE_INFINITY;
+			}
+			pSum += point[i];
+		}
+		if (pSum >= 1.0) {
+			return Double.NEGATIVE_INFINITY;
+		}
 		double sigmaSq = 1.0;
 		for (int i=0;i<point.length;i++) {
 			sigmaSq -= point[i];

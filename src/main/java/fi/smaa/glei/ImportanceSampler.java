@@ -1,16 +1,25 @@
 package fi.smaa.glei;
 
+import cern.colt.matrix.DoubleFactory1D;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.jet.math.Mult;
+import cern.jet.math.PlusMult;
 
 
-public class ImportanceSampler {
 
-	public static final double EPSILON = 1E-15; // appropriate?
+public class ImportanceSampler implements MultiDimensionalSampler {
+
+	public static final double EPSILON = 1E-30;
 	
 	private Function lnG;
 	private Function lnF;
-	private Function H;
+	private MultiOutputFunction H;
 	private int nrDraws;
 	private MultiDimensionalSampler gSampler;
+
+	private double[] lnFis;
+	private double[] lnGis;
+	private double[][] thetaIs;
 
 	/**
 	 * Constructs a new sampler.
@@ -22,7 +31,7 @@ public class ImportanceSampler {
 	 * @param H the objective functions
 	 * @param nrDraws the number of draws
 	 */
-	public ImportanceSampler(Function lnG, Function lnF, Function H, int nrDraws, MultiDimensionalSampler gSampler) {
+	public ImportanceSampler(Function lnG, Function lnF, MultiOutputFunction H, int nrDraws, MultiDimensionalSampler gSampler) {
 		if (lnG.dimension() != lnF.dimension() || lnF.dimension() != H.dimension()) {
 			throw new IllegalArgumentException("PRECOND violation: functions with differing dimensions");
 		}
@@ -31,22 +40,44 @@ public class ImportanceSampler {
 		this.H = H;
 		this.nrDraws = nrDraws;
 		this.gSampler = gSampler;
+		
+		lnFis = new double[nrDraws];
+		lnGis = new double[nrDraws];
+		thetaIs = new double[nrDraws][0];
 	}
 			
-	public double sample() throws SamplingException {
-		double hTheta = 0.0;
+	public double[] sample() throws SamplingException {
+		DoubleMatrix1D hTheta = DoubleFactory1D.dense.make(H.returnDimension(), 0.0);
+		
 		double w = 0.0;
 
 		int M = getNrDraws();
 		boolean nonZeroFound = false;
 
+		double maxLnF = Double.NEGATIVE_INFINITY;
+		
 		for (int i=0;i<M;i++) {
-			double[] thetaI = gSampler.sample();
-			double lnGi = lnG.value(thetaI);
-			double lnFi = lnF.value(thetaI);
+			double[] thetaI = gSampler.sample().clone();
+			lnGis[i] = lnG.value(thetaI);
+			lnFis[i]= lnF.value(thetaI);
+			thetaIs[i] = thetaI;
+			if (lnFis[i] > maxLnF) {
+				maxLnF = lnFis[i];
+			}
+		}
+
+		// substract maxLnF from all lnFis
+		for (int i=0;i<M;i++) {
+			lnFis[i] -= maxLnF;
+		}	
+		
+		for (int i=0;i<M;i++) {
+			double lnFi = lnFis[i];
+			double lnGi = lnGis[i];
+			double[] thetaI = thetaIs[i];
 			double wi = Math.exp(lnFi - lnGi);
-			double hi = H.value(thetaI);
-			hTheta += (hi * wi);
+			DoubleMatrix1D hi = DoubleFactory1D.dense.make(H.value(thetaI));
+			hTheta.assign(hi, PlusMult.plusMult(wi));
 			w += wi;
 			if (!nonZeroFound && !withinEpsilon(wi, 0.0)) {
 				nonZeroFound = true;
@@ -55,7 +86,7 @@ public class ImportanceSampler {
 		if (!nonZeroFound) {
 			throw new SamplingException("Need more draws or a better candidate logG");
 		}
-		return hTheta / w;
+		return hTheta.assign(Mult.div(w)).toArray();
 	}
 
 	public int getNrDraws() {

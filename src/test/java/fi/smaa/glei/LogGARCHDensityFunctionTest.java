@@ -18,4 +18,15 @@ public class LogGARCHDensityFunctionTest {
 		LogGARCHDensityFunction fn = new LogGARCHDensityFunction(p, q, data);
 		assertEquals(-3.730027, fn.value(pt), 0.0001);
 	}
+	
+	@Test
+	public void testInvalidAlphaBeta() {
+		int p = 1;
+		int q = 1;
+		double[] data = new double[]{0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
+		double[] pt = new double[] {-1.0, 0.0};
+		
+		LogGARCHDensityFunction fn = new LogGARCHDensityFunction(p, q, data);
+		assertEquals(Double.NEGATIVE_INFINITY, new Double(fn.value(pt)), 0.0000001);
+	}
 }

@@ -22,13 +22,13 @@ public class ImportanceSamplerTest {
 		
 		Function lnF = new LogF(yi);
 		Function lnG = new LogNormalDensityFunction(1.0, 10.0);
-		Function H = new EqualFunction1D();
+		MultiOutputFunction H = new EqualFunction(1);
 
 		MultiDimensionalSampler normalOneTenSampler = new 
 				DistributionSampler1D(new Normal(1.0, 10.0, engine));
 		
 		ImportanceSampler samp = new ImportanceSampler(lnF, lnG, H, 2000, normalOneTenSampler);
-		assertEquals(0.0, samp.sample(), 0.1);
+		assertEquals(0.0, samp.sample()[0], 0.1);
 	}
 	
 	
