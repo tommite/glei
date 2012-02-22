@@ -6,7 +6,7 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.PlusMult;
 
-public class SimplifiedStudentTLogDensityFunction extends AbstractDimFunction {
+public class StudentTLogDensityFunction extends AbstractDimFunction {
 
 	private DoubleMatrix2D mu;
 	private DoubleMatrix2D sigmaPrime;
@@ -25,7 +25,7 @@ public class SimplifiedStudentTLogDensityFunction extends AbstractDimFunction {
 	 * @param sigma sample scale (p x p matrix)
 	 * @param dof degrees of freedom (n). PRECOND: > 0
 	 */
-	public SimplifiedStudentTLogDensityFunction(DoubleMatrix1D mu, DoubleMatrix2D sigma, int dof) {
+	public StudentTLogDensityFunction(DoubleMatrix1D mu, DoubleMatrix2D sigma, int dof) {
 		super(mu.size());
 		p = mu.size();
 		if (p != sigma.columns() || sigma.columns() != sigma.rows()) {

@@ -9,7 +9,7 @@ import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 
-public class SimplifiedStudentTLogDensityFunctionTest {
+public class StudentTLogDensityFunctionTest {
 
 	@Test
 	public void testEvaluateWithNalansAwesomeExample() {		
@@ -21,7 +21,7 @@ public class SimplifiedStudentTLogDensityFunctionTest {
 		DoubleMatrix1D mu = DoubleFactory1D.dense.make(new double[]{-3., 1.});
 		int n = 10;
 
-		SimplifiedStudentTLogDensityFunction fnc = new SimplifiedStudentTLogDensityFunction(mu, sigma, n);
+		StudentTLogDensityFunction fnc = new StudentTLogDensityFunction(mu, sigma, n);
 		
 		double[] theta1 = new double[]{0., 0.};
 		double[] theta2 = new double[]{1., 2.};

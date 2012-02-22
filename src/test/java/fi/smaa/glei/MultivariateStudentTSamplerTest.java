@@ -27,7 +27,7 @@ public class MultivariateStudentTSamplerTest {
 		int N = 1000;
 		double[][] samples = new double[2][1000];
 		
-		MultivariateStudentTSampler s = new MultivariateStudentTSampler(sigma, mu, n, new MersenneTwister());
+		MultivariateStudentTSampler s = new MultivariateStudentTSampler(mu, sigma, n, new MersenneTwister());
 		for (int i=0;i<N;i++) {
 			double[] sample = s.sample();
 			samples[0][i] = sample[0];

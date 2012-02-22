@@ -21,12 +21,12 @@ public class MultivariateStudentTSampler implements MultiDimensionalSampler{
 
 	/**
 	 * 
-	 * @param sigma p x p matrix. PRECOND: positive definite
 	 * @param mu p length vector
+	 * @param sigma p x p matrix. PRECOND: positive definite
 	 * @param n degrees of freedom. PRECOND: > 0
 	 * @param rnd the random number generator engine
 	 */
-	public MultivariateStudentTSampler(DoubleMatrix2D sigma, DoubleMatrix1D mu, int n, RandomEngine rnd) {
+	public MultivariateStudentTSampler(DoubleMatrix1D mu, DoubleMatrix2D sigma, int n, RandomEngine rnd) {
 		p = mu.size();
 		if (n < 1) {
 			throw new IllegalArgumentException("PRECOND violation: n < 1");
