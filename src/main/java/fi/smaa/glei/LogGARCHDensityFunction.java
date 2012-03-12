@@ -42,7 +42,7 @@ public class LogGARCHDensityFunction extends AbstractDimFunction {
 	}
 
 	/**
-	 * Evaluate s.t. point has the alpha-components and then the beta-ones.
+	 * Evaluate s.t. point has first the alpha-components and then the beta-ones (concatenated).
 	 */
 	protected double evaluate(double[] point) {
 		double pSum = 0.0;
