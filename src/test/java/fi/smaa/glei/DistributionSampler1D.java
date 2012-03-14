@@ -5,16 +5,17 @@ import cern.jet.random.AbstractDistribution;
 public class DistributionSampler1D implements MultiDimensionalSampler {
 
 	private AbstractDistribution dist;
-	private double[] lastPoint;
 
 	public DistributionSampler1D(AbstractDistribution dist) {
 		this.dist = dist;
-		lastPoint = new double[1];
 	}
 
-	public double[] sample() throws SamplingException {
-		lastPoint[0] = dist.nextDouble();
-		return lastPoint;
+	public double[][] sample(int nrDraws) throws SamplingException {
+		double[][] res = new double[nrDraws][1];
+		for (int i=0;i<nrDraws;i++) {
+			res[i][0] = dist.nextDouble();
+		}
+		return res;
 	}
 
 }

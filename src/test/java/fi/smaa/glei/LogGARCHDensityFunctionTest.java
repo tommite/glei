@@ -1,7 +1,6 @@
 package fi.smaa.glei;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -16,7 +15,7 @@ public class LogGARCHDensityFunctionTest {
 		
 		
 		LogGARCHDensityFunction fn = new LogGARCHDensityFunction(p, q, data);
-		assertEquals(-3.730027, fn.value(pt), 0.0001);
+		Assert.assertArrayEquals(new double[]{-3.730027}, fn.value(new double[][]{pt}), 0.0001);
 	}
 	
 	@Test
@@ -27,6 +26,6 @@ public class LogGARCHDensityFunctionTest {
 		double[] pt = new double[] {-1.0, 0.0};
 		
 		LogGARCHDensityFunction fn = new LogGARCHDensityFunction(p, q, data);
-		assertEquals(Double.NEGATIVE_INFINITY, new Double(fn.value(pt)), 0.0000001);
+		Assert.assertArrayEquals(new double[]{Double.NEGATIVE_INFINITY}, fn.value(new double[][]{pt}), 0.0000001);
 	}
 }

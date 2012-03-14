@@ -42,7 +42,7 @@ public class StudentTLogDensityFunction extends AbstractDimFunction {
 	}
 
 	@Override
-	protected double evaluate(double[] point) {
+	protected double evaluateSingle(double[] point) {
 		DoubleMatrix2D theta = matFac.make(point, point.length);
 		DoubleMatrix2D thetaMinusMu = theta.copy();
 		thetaMinusMu.assign(mu, PlusMult.minusMult(1.0));

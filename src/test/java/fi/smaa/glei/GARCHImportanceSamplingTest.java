@@ -37,7 +37,8 @@ public class GARCHImportanceSamplingTest {
 		EqualFunction H = new EqualFunction(k);
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
-		Assert.assertArrayEquals(new double[]{0.6920489, 0.1108320}, sampler.sample(), 0.2);
-		
+		double[][] res = sampler.sample(M);
+		Assert.assertArrayEquals(res[0], new double[]{0.6920489}, 0.2);
+		Assert.assertArrayEquals(res[1], new double[]{0.1108320}, 0.2);		
 	}
 }

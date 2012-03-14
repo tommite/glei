@@ -28,10 +28,10 @@ public class MultivariateStudentTSamplerTest {
 		double[][] samples = new double[2][1000];
 		
 		MultivariateStudentTSampler s = new MultivariateStudentTSampler(mu, sigma, n, new MersenneTwister());
+		double[][] sample = s.sample(N);
 		for (int i=0;i<N;i++) {
-			double[] sample = s.sample();
-			samples[0][i] = sample[0];
-			samples[1][i] = sample[1];
+			samples[0][i] = sample[i][0];
+			samples[1][i] = sample[i][1];
 		}
 		DoubleArrayList v1 = new DoubleArrayList(samples[0]);
 		DoubleArrayList v2 = new DoubleArrayList(samples[1]);

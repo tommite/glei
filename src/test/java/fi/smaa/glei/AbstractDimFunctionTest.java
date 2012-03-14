@@ -13,7 +13,7 @@ public class AbstractDimFunctionTest {
 	public void setUp() {
 		fnc = new AbstractDimFunction(2) {
 			@Override
-			protected double evaluate(double[] point) {
+			protected double evaluateSingle(double[] point) {
 				return 0;
 			}
 		};
@@ -26,6 +26,6 @@ public class AbstractDimFunctionTest {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testInvalidValueDim() {
-		fnc.value(new double[]{1.0});
+		fnc.value(new double[][]{{1.0}});
 	}
 }

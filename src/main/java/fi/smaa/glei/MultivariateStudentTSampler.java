@@ -8,7 +8,7 @@ import cern.jet.random.ChiSquare;
 import cern.jet.random.Normal;
 import cern.jet.random.engine.RandomEngine;
 
-public class MultivariateStudentTSampler implements MultiDimensionalSampler{
+public class MultivariateStudentTSampler implements MultiDimensionalSampler {
 
 	private DoubleMatrix2D sigmaChol;
 	private DoubleMatrix1D thetaStdnorm;
@@ -16,7 +16,6 @@ public class MultivariateStudentTSampler implements MultiDimensionalSampler{
 	private DoubleMatrix1D mu;
 	private Normal normal01Sampler;
 	private ChiSquare chisqSampler; 
-	private double[] lastSample;
 	private double n;
 
 	/**
@@ -44,10 +43,17 @@ public class MultivariateStudentTSampler implements MultiDimensionalSampler{
 		thetaStdnorm = DoubleFactory1D.dense.make(p);
 		normal01Sampler = new Normal(0.0, 1.0, rnd);
 		chisqSampler = new ChiSquare((double) n, rnd);
-		lastSample = new double[p];
 	}
 	
-	public double[] sample() {
+	public double[][] sample(int nrDraws) {
+		double[][] res = new double[nrDraws][p];
+		for (int i=0;i<nrDraws;i++) {
+			sampleSingle(res[i]);
+		}
+		return res;
+	}
+	
+	private void sampleSingle(double[] dest) {
 		for (int i=0;i<p;i++) {
 			thetaStdnorm.set(i, normal01Sampler.nextDouble());
 		}
@@ -55,8 +61,7 @@ public class MultivariateStudentTSampler implements MultiDimensionalSampler{
 		
 		for (int i=0;i<p;i++) {
 			double thetaChi = chisqSampler.nextDouble();
-			lastSample[i] = thetaNorm.get(i) / Math.sqrt(thetaChi / n) + mu.get(i);
+			dest[i] = thetaNorm.get(i) / Math.sqrt(thetaChi / n) + mu.get(i);
 		}
-		return lastSample;
 	}
 }

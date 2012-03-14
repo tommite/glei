@@ -1,7 +1,6 @@
 package fi.smaa.glei;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import cern.jet.random.Normal;
@@ -28,7 +27,7 @@ public class ImportanceSamplerTest {
 				DistributionSampler1D(new Normal(1.0, 10.0, engine));
 		
 		ImportanceSampler samp = new ImportanceSampler(lnF, lnG, H, 2000, normalOneTenSampler);
-		assertEquals(0.0, samp.sample()[0], 0.1);
+		Assert.assertArrayEquals(new double[]{0.0}, samp.sample(2000)[0], 0.1);
 	}
 	
 	
@@ -41,7 +40,7 @@ public class ImportanceSamplerTest {
 			this.data = data;
 		}
 		
-		public double evaluate(double[] at) {
+		public double evaluateSingle(double[] at) {
 			double point = at[0];
 			
 			double res = 0.0;

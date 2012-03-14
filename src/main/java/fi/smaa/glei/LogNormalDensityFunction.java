@@ -13,7 +13,7 @@ public class LogNormalDensityFunction extends AbstractDimFunction {
 	}
 
 
-	public double evaluate(double[] point) {
+	public double evaluateSingle(double[] point) {
 		double res = point[0] - mean;
 		res *= res;
 		res /= varsq;

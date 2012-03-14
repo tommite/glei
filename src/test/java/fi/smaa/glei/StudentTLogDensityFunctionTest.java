@@ -26,6 +26,6 @@ public class StudentTLogDensityFunctionTest {
 		double[] theta1 = new double[]{0., 0.};
 		double[] theta2 = new double[]{1., 2.};
 		
-		assertEquals(-1.800628, fnc.value(theta1) - fnc.value(theta2), 0.00001);
+		assertEquals(-1.800628, fnc.value(new double[][]{theta1})[0] - fnc.value(new double[][]{theta2})[0], 0.00001);
 	}
 }

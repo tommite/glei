@@ -17,10 +17,6 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 	private int nrDraws;
 	private MultiDimensionalSampler gSampler;
 
-	private double[] lnFis;
-	private double[] lnGis;
-	private double[][] thetaIs;
-
 	/**
 	 * Constructs a new sampler.
 	 * 
@@ -40,13 +36,9 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 		this.H = H;
 		this.nrDraws = nrDraws;
 		this.gSampler = gSampler;
-		
-		lnFis = new double[nrDraws];
-		lnGis = new double[nrDraws];
-		thetaIs = new double[nrDraws][0];
 	}
 			
-	public double[] sample() throws SamplingException {
+	public double[][] sample(int nrDraws) throws SamplingException {
 		DoubleMatrix1D hTheta = DoubleFactory1D.dense.make(H.returnDimension(), 0.0);
 		
 		double w = 0.0;
@@ -54,13 +46,13 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 		int M = getNrDraws();
 		boolean nonZeroFound = false;
 
-		double maxLnF = Double.NEGATIVE_INFINITY;
+		double[][] thetaIs = gSampler.sample(M);
+		double[] lnGis = lnG.value(thetaIs);
+		double[] lnFis= lnF.value(thetaIs);
+
+		double maxLnF = Double.NEGATIVE_INFINITY;		
 		
 		for (int i=0;i<M;i++) {
-			double[] thetaI = gSampler.sample().clone();
-			lnGis[i] = lnG.value(thetaI);
-			lnFis[i]= lnF.value(thetaI);
-			thetaIs[i] = thetaI;
 			if (lnFis[i] > maxLnF) {
 				maxLnF = lnFis[i];
 			}
@@ -86,7 +78,12 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 		if (!nonZeroFound) {
 			throw new SamplingException("Need more draws or a better candidate logG");
 		}
-		return hTheta.assign(Mult.div(w)).toArray();
+		double[] res1Dim = hTheta.assign(Mult.div(w)).toArray();
+		double[][] res = new double[res1Dim.length][1];
+		for (int i=0;i<res1Dim.length;i++) {
+			res[i][0] = res1Dim[i];
+		}
+		return res;
 	}
 
 	public int getNrDraws() {

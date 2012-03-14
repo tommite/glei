@@ -27,6 +27,12 @@ public class GARCHRFacade {
 		Function lnG = new StudentTLogDensityFunction(muV, sigmaM, dof);
 		MultiDimensionalSampler gSampler = new MultivariateStudentTSampler(muV, sigmaM, dof, rnd);
 		ImportanceSampler sampler = new ImportanceSampler(lnG, lnF, H, nrDraws, gSampler);
-		return sampler.sample();
+		double[][] res = sampler.sample(nrDraws);
+		
+		double[] dim1res = new double[res.length];
+		for (int i=0;i<dim1res.length;i++) {
+			dim1res[i] = res[i][0];
+		}
+		return dim1res;
 	}
 }
