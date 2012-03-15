@@ -12,8 +12,6 @@ __kernel void log_garch_density(
 	int pointsDim = *ppointsDim;
 	int tStar = *ptStar;
 	
-	const int blockSize = 64;
-
 	int pIndex = get_global_id(0);
 
 	__global const float *point = points + (pointsDim * pIndex);

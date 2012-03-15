@@ -69,7 +69,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		float[] fResult = new float[nrPoints];
 		
 		cl_context context = facade.getContext();
-				
+						
 		// allocate buffers
 		cl_mem pBuf = facade.createIntArgBuffer(p);
 		cl_mem qBuf = facade.createIntArgBuffer(q);
