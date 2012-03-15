@@ -55,12 +55,11 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	public double[] value(double[][] points) {
 		int nrPoints = points.length;
 		int pointsDim = points[0].length;
-		long localSizeY = warpSize;		
 		
 		if (nrPoints % warpSize != 0) {
 			throw new IllegalArgumentException("PRECOND violation: nrPoints % warpSize != 0");
 		}
-		if (localSizeY > facade.getMaxWorkGroupSize()) {
+		if (warpSize > facade.getMaxWorkGroupSize()) {
 			throw new IllegalArgumentException("PRECOND violation: warpSize > facade.getMaxWorkGroupSize()");
 		}
 		
@@ -72,8 +71,8 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		cl_context context = facade.getContext();
 				
 		// allocate buffers
-		cl_mem pBuf = facade.createIntArgBuffer(p);		
-		cl_mem qBuf = facade.createIntArgBuffer(q);		
+		cl_mem pBuf = facade.createIntArgBuffer(p);
+		cl_mem qBuf = facade.createIntArgBuffer(q);
 		cl_mem pointsBuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
 	            Sizeof.cl_float * fPoints.length, Pointer.to(fPoints), null);		
 		cl_mem dataBuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -98,9 +97,8 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		clSetKernelArg(kernel, 8, Sizeof.cl_mem, Pointer.to(resBuf));
 
 		// Set the work-item dimensions
-		long globalSize = nrPoints;
-		long local_work_size[] = new long[]{localSizeY};
-		long global_work_size[] = new long[]{globalSize};
+		long local_work_size[] = new long[]{warpSize};
+		long global_work_size[] = new long[]{nrPoints};
 		
 		// Execute the kernel
 		clEnqueueNDRangeKernel(facade.getCommandQueue(), kernel, 1, null,
