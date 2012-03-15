@@ -7,11 +7,11 @@ import cern.jet.stat.Descriptive;
 
 public class LogGARCHDensityFunction extends AbstractDimFunction {
 
-	private int p;
-	private int q;
-	private double[] data;
-	private int tStar;
-	private double[] h;
+	protected int p;
+	protected int q;
+	protected double[] data;
+	protected int tStar;
+	protected double[] h;
 
 	/**
 	 * 
