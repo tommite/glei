@@ -8,10 +8,11 @@ import static org.jocl.CL.clBuildProgram;
 import static org.jocl.CL.clCreateBuffer;
 import static org.jocl.CL.clCreateCommandQueue;
 import static org.jocl.CL.clCreateContext;
-import static org.jocl.CL.clCreateKernel;
 import static org.jocl.CL.clCreateProgramWithSource;
 import static org.jocl.CL.clGetDeviceIDs;
 import static org.jocl.CL.clGetPlatformIDs;
+import static org.jocl.CL.clReleaseCommandQueue;
+import static org.jocl.CL.clReleaseContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +26,6 @@ import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
-import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.jocl.cl_platform_id;
 import org.jocl.cl_program;
@@ -60,13 +60,10 @@ public class OpenCLFacade {
 		return res;
 	}
 	
-	public cl_kernel buildKernel(String fileName, String kernelName) throws IOException {
-		String pStr = loadProgram(fileName);
-        cl_program program = clCreateProgramWithSource(context, 1, new String[]{ pStr }, null, null);
-        // Build the program
+	public cl_program buildProgram(String fName) throws IOException {
+		cl_program program = clCreateProgramWithSource(context, 1, new String[]{ loadProgram(fName) }, null, null);
         clBuildProgram(program, 0, null, null, null, null);
-        // Create the kernel
-        return clCreateKernel(program, kernelName, null);
+		return program;
 	}
 	
 	public int getNrDevices() {
@@ -126,5 +123,11 @@ public class OpenCLFacade {
 
 	public cl_command_queue getCommandQueue() {
 		return commandQueue;
+	}
+	
+	@Override
+	public void finalize() {
+		clReleaseCommandQueue(commandQueue);
+		clReleaseContext(context);
 	}
 }

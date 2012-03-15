@@ -21,11 +21,12 @@ public class LogGARCHDensityFunctionGPUTest {
 		int p = 3;
 		int q = 2;
 		double[] data = new double[]{0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
-		double[] pt = new double[] {0.1, 0.2, 0.3, 0.0, 0.1};
+		double[][] pt = new double[][] {{0.1, 0.2, 0.3, 0.0, 0.1}};
 		
 		
 		LogGARCHDensityFunctionGPU fn = new LogGARCHDensityFunctionGPU(p, q, data, fac);
-		Assert.assertArrayEquals(new double[]{-3.730027}, fn.value(new double[][]{pt}), 0.0001);
+		double[] res = fn.value(pt);
+		Assert.assertArrayEquals(new double[]{-3.730027}, res, 0.0001);
 	}
 	
 	@Test

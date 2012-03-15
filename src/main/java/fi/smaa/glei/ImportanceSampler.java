@@ -37,8 +37,12 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 		this.nrDraws = nrDraws;
 		this.gSampler = gSampler;
 	}
-			
+	
 	public double[][] sample(int nrDraws) throws SamplingException {
+		return sample(nrDraws, false);
+	}
+			
+	public double[][] sample(int nrDraws, boolean printTimes) throws SamplingException {
 		DoubleMatrix1D hTheta = DoubleFactory1D.dense.make(H.returnDimension(), 0.0);
 		
 		double w = 0.0;
@@ -46,9 +50,16 @@ public class ImportanceSampler implements MultiDimensionalSampler {
 		int M = getNrDraws();
 		boolean nonZeroFound = false;
 
+		long t1 = System.currentTimeMillis();
 		double[][] thetaIs = gSampler.sample(M);
+		long t2 = System.currentTimeMillis();		
 		double[] lnGis = lnG.value(thetaIs);
+		long t3 = System.currentTimeMillis();		
 		double[] lnFis= lnF.value(thetaIs);
+		long t4 = System.currentTimeMillis();
+		if (printTimes) {
+			System.out.println("Times (ms): thetaIs sampling " + (t2-t1) + " lnG " + (t3-t2) + " lnF " + (t4-t3));
+		}
 
 		double maxLnF = Double.NEGATIVE_INFINITY;		
 		

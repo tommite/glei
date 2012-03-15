@@ -29,8 +29,8 @@ public class OpenCLFacadeTest {
 	}
 	
 	@Test
-	public void testBuildKernel() throws IOException {
-		assertNotNull(f.buildKernel("log_garch_density.cl", "log_garch_density"));
+	public void testBuildProgram() throws IOException {
+		assertNotNull(f.buildProgram("log_garch_density.cl"));
 	}
 	
 }
