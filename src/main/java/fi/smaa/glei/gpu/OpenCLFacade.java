@@ -1,6 +1,7 @@
 package fi.smaa.glei.gpu;
 
 import static org.jocl.CL.CL_CONTEXT_PLATFORM;
+
 import static org.jocl.CL.CL_DEVICE_TYPE_GPU;
 import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
 import static org.jocl.CL.CL_MEM_READ_ONLY;
@@ -13,6 +14,7 @@ import static org.jocl.CL.clGetDeviceIDs;
 import static org.jocl.CL.clGetPlatformIDs;
 import static org.jocl.CL.clReleaseCommandQueue;
 import static org.jocl.CL.clReleaseContext;
+import static org.jocl.CL.clGetDeviceInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class OpenCLFacade {
 	private int deviceIndex = 0;
 	private cl_device_id devices[];
 	private cl_context_properties contextProperties;
+	private int maxWorkGroupSize;
 
 	public OpenCLFacade() {
 		initEngine();
@@ -96,6 +99,7 @@ public class OpenCLFacade {
 
 		devices = new cl_device_id[numDevices];
 		clGetDeviceIDs(platform, deviceType, numDevices, devices, null);
+		
 	}
 
 	private void initDevice(int index) {
@@ -108,10 +112,20 @@ public class OpenCLFacade {
 
 		// Create a command-queue
 		commandQueue = clCreateCommandQueue(context, devices[0], 0, null);
+		
+		// store max work group size
+		int[] wsBuf = new int[1];
+		long[] ret = new long[1];
+		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.cl_int, Pointer.to(wsBuf), ret);
+		maxWorkGroupSize = wsBuf[0];
 	}
 
 	public cl_context getContext() {
 		return context;
+	}
+	
+	public int getMaxWorkGroupSize() {
+		return maxWorkGroupSize;
 	}
 	
 	public cl_mem createIntArgBuffer(int value) {

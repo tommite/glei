@@ -48,18 +48,19 @@ public class GARCHImportanceSamplingTest {
 	
 	@Test
 	public void testNalansTestWithGPU() throws SamplingException, IOException {
+		OpenCLFacade facade = new OpenCLFacade();		
 		RandomEngine engine = new MersenneTwister(0x667);
 		double alpha = 0.8, beta = 0.0;
 		double sigma2 = 1.0 - alpha - beta;
 		int p = 1, q = 1;
 		int T = 300;
 		int k = p + q;
-		int M = (int) 1e6;
 		double y0 = 0.0;
 		double h0 = sigma2;
 		GARCH11DataSimulator sim = new GARCH11DataSimulator(y0, h0, sigma2, alpha,
 				beta, engine, T, 100);
 		
+		int dim = 2;
 		DoubleMatrix1D mode = DoubleFactory1D.dense.make(new double[]{0.5, 0.5});
 		DoubleMatrix2D sigma = DoubleFactory2D.dense.make(new double[][]{
 				{1.0, 0.0},
@@ -67,8 +68,11 @@ public class GARCHImportanceSamplingTest {
 		int df = 10;
 		MultivariateStudentTSampler Theta = new MultivariateStudentTSampler(mode, sigma, df, engine);
 		StudentTLogDensityFunction lngtheta = new StudentTLogDensityFunction(mode, sigma, df);
-		LogGARCHDensityFunction lnftheta = new LogGARCHDensityFunctionGPU(p, q, sim.getY(), new OpenCLFacade());
+		LogGARCHDensityFunction lnftheta = new LogGARCHDensityFunctionGPU(p, q, sim.getY(), facade, 
+				facade.getMaxWorkGroupSize() / dim);
 		EqualFunction H = new EqualFunction(k);
+		int Mclose = (int) 1e6;
+		int M = ((Mclose / facade.getMaxWorkGroupSize())+1) * facade.getMaxWorkGroupSize();
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
 		double[][] res = sampler.sample(M, true);

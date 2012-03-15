@@ -26,17 +26,23 @@ import fi.smaa.glei.LogGARCHDensityFunction;
 
 public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	
-	private static final String KERNEL_FILENAME = "log_garch_density.cl";
-	private static final String KERNEL_FUNCNAME = "log_garch_density";
+	public static final String KERNEL_FILENAME = "log_garch_density.cl";
+	public static final String KERNEL_FUNCNAME = "log_garch_density";
 	private OpenCLFacade facade;
 	private cl_program program;
 	private cl_kernel kernel;
+	private long warpSize;
 
-	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade) throws IOException {
+	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade, long warpSize) throws IOException {
 		super(p, q, data);
 		this.facade = facade;
 		program = facade.buildProgram(KERNEL_FILENAME);
 		kernel = clCreateKernel(program, KERNEL_FUNCNAME, null);
+		this.warpSize = warpSize;
+	}
+	
+	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade) throws IOException {
+		this(p, q, data, facade, facade.getMaxWorkGroupSize());
 	}
 	
 	public void finalize() {
@@ -48,6 +54,15 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	public double[] value(double[][] points) {
 		int nrPoints = points.length;
 		int pointsDim = points[0].length;
+		long localSizeX = warpSize * pointsDim;		
+		
+		if (nrPoints % warpSize != 0) {
+			throw new IllegalArgumentException("PRECOND violation: nrPoints % warpSize != 0");
+		}
+		if (localSizeX > facade.getMaxWorkGroupSize()) {
+			throw new IllegalArgumentException("PRECOND violation: warpSize * pointsDim > facade.getMaxWorkGroupSize()");
+		}
+		
 		float[] fPoints = double2dimToFloat1Dim(points);
 		float[] fData = double1dimToFloat1Dim(data, data.length);
 		float[] fH = double1dimToFloat1Dim(h, tStar);		
@@ -82,9 +97,10 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		clSetKernelArg(kernel, 8, Sizeof.cl_mem, Pointer.to(resBuf));
 
 		// Set the work-item dimensions
-		long global_work_size[] = new long[]{nrPoints};
-		long local_work_size[] = new long[]{1};
-
+		long globalSize = nrPoints * pointsDim;
+		long local_work_size[] = new long[]{localSizeX};
+		long global_work_size[] = new long[]{globalSize};
+		
 		// Execute the kernel
 		clEnqueueNDRangeKernel(facade.getCommandQueue(), kernel, 1, null,
 				global_work_size, local_work_size, 0, null, null);
