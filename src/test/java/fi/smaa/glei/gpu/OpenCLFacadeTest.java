@@ -33,4 +33,11 @@ public class OpenCLFacadeTest {
 		assertNotNull(f.buildProgram("log_garch_density.cl"));
 	}
 	
+	@Test
+	public void testInfos() {
+		System.out.println("OpenCL global mem size " + f.getGlobalMemSize());
+		System.out.println("OpenCL max mem alloc size " + f.getMaxMemAllocSize());
+		System.out.println("OpenCL max work group size " + f.getMaxWorkGroupSize());		
+	}
+	
 }

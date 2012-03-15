@@ -43,6 +43,8 @@ public class OpenCLFacade {
 	private cl_device_id devices[];
 	private cl_context_properties contextProperties;
 	private int maxWorkGroupSize;
+	private long maxMemAllocSize;
+	private long globalMemSize;
 
 	public OpenCLFacade() {
 		initEngine();
@@ -114,10 +116,23 @@ public class OpenCLFacade {
 		commandQueue = clCreateCommandQueue(context, devices[0], 0, null);
 		
 		// store max work group size
-		int[] wsBuf = new int[1];
+		int[] pBuf = new int[1];
 		long[] ret = new long[1];
-		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.cl_int, Pointer.to(wsBuf), ret);
-		maxWorkGroupSize = wsBuf[0];
+		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.cl_int, Pointer.to(pBuf), ret);
+		maxWorkGroupSize = pBuf[0];
+		long[] pBuf2 = new long[1];
+		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_MEM_ALLOC_SIZE, Sizeof.cl_long, Pointer.to(pBuf2), ret);
+		maxMemAllocSize = pBuf2[0];
+		clGetDeviceInfo(device, CL.CL_DEVICE_GLOBAL_MEM_SIZE, Sizeof.cl_long, Pointer.to(pBuf2), ret);
+		globalMemSize = pBuf2[0];
+	}
+	
+	public long getGlobalMemSize() {
+		return globalMemSize;
+	}
+	
+	public long getMaxMemAllocSize() {
+		return maxMemAllocSize;
 	}
 
 	public cl_context getContext() {

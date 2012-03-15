@@ -44,7 +44,7 @@ __kernel void log_garch_density(
 	for (int t=tStar;t<nrData;t++) {
 		float alphaSum = 0.0f;
 		for (int i=0;i<p;i++) {
-			alphaSum += point[i] * native_powr(data[t-i-1], 2.0f); 
+			alphaSum += point[i] * native_powr(data[t-i-1], 2.0f);
 		}
 		float betaSum = 0.0;
 		for (int j=0;j<q;j++) {
