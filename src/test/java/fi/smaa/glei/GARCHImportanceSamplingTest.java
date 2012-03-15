@@ -60,7 +60,6 @@ public class GARCHImportanceSamplingTest {
 		GARCH11DataSimulator sim = new GARCH11DataSimulator(y0, h0, sigma2, alpha,
 				beta, engine, T, 100);
 		
-		int dim = 2;
 		DoubleMatrix1D mode = DoubleFactory1D.dense.make(new double[]{0.5, 0.5});
 		DoubleMatrix2D sigma = DoubleFactory2D.dense.make(new double[][]{
 				{1.0, 0.0},
@@ -68,11 +67,10 @@ public class GARCHImportanceSamplingTest {
 		int df = 10;
 		MultivariateStudentTSampler Theta = new MultivariateStudentTSampler(mode, sigma, df, engine);
 		StudentTLogDensityFunction lngtheta = new StudentTLogDensityFunction(mode, sigma, df);
-		LogGARCHDensityFunction lnftheta = new LogGARCHDensityFunctionGPU(p, q, sim.getY(), facade, 
-				facade.getMaxWorkGroupSize() / dim);
+		LogGARCHDensityFunctionGPU lnftheta = new LogGARCHDensityFunctionGPU(p, q, sim.getY(), facade);
 		EqualFunction H = new EqualFunction(k);
 		int Mclose = (int) 1e6;
-		int M = ((Mclose / facade.getMaxWorkGroupSize())+1) * facade.getMaxWorkGroupSize();
+		int M = ((Mclose / LogGARCHDensityFunctionGPU.DEFAULT_WARP_SIZE)+1) * LogGARCHDensityFunctionGPU.DEFAULT_WARP_SIZE;
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
 		double[][] res = sampler.sample(M, true);

@@ -32,8 +32,9 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	private cl_program program;
 	private cl_kernel kernel;
 	private long warpSize;
+	public static final int DEFAULT_WARP_SIZE = 64;
 
-	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade, long warpSize) throws IOException {
+	protected LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade, long warpSize) throws IOException {
 		super(p, q, data);
 		this.facade = facade;
 		program = facade.buildProgram(KERNEL_FILENAME);
@@ -42,7 +43,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	}
 	
 	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade) throws IOException {
-		this(p, q, data, facade, facade.getMaxWorkGroupSize());
+		this(p, q, data, facade, DEFAULT_WARP_SIZE);
 	}
 	
 	public void finalize() {
@@ -54,13 +55,13 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	public double[] value(double[][] points) {
 		int nrPoints = points.length;
 		int pointsDim = points[0].length;
-		long localSizeX = warpSize * pointsDim;		
+		long localSizeY = warpSize;		
 		
 		if (nrPoints % warpSize != 0) {
 			throw new IllegalArgumentException("PRECOND violation: nrPoints % warpSize != 0");
 		}
-		if (localSizeX > facade.getMaxWorkGroupSize()) {
-			throw new IllegalArgumentException("PRECOND violation: warpSize * pointsDim > facade.getMaxWorkGroupSize()");
+		if (localSizeY > facade.getMaxWorkGroupSize()) {
+			throw new IllegalArgumentException("PRECOND violation: warpSize > facade.getMaxWorkGroupSize()");
 		}
 		
 		float[] fPoints = double2dimToFloat1Dim(points);
@@ -97,8 +98,8 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		clSetKernelArg(kernel, 8, Sizeof.cl_mem, Pointer.to(resBuf));
 
 		// Set the work-item dimensions
-		long globalSize = nrPoints * pointsDim;
-		long local_work_size[] = new long[]{localSizeX};
+		long globalSize = nrPoints;
+		long local_work_size[] = new long[]{localSizeY};
 		long global_work_size[] = new long[]{globalSize};
 		
 		// Execute the kernel
