@@ -32,8 +32,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	private cl_program program;
 	private cl_kernel kernel;
 	private long warpSize;
-	public static final int DEFAULT_WARP_SIZE = 64;
-
+	
 	protected LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade, long warpSize) throws IOException {
 		super(p, q, data);
 		this.facade = facade;
@@ -43,7 +42,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	}
 	
 	public LogGARCHDensityFunctionGPU(int p, int q, double[] data, OpenCLFacade facade) throws IOException {
-		this(p, q, data, facade, DEFAULT_WARP_SIZE);
+		this(p, q, data, facade, OpenCLFacade.DEFAULT_WARP_SIZE);
 	}
 	
 	public void finalize() {

@@ -45,6 +45,8 @@ public class OpenCLFacade {
 	private int maxWorkGroupSize;
 	private long maxMemAllocSize;
 	private long globalMemSize;
+	
+	public static final int DEFAULT_WARP_SIZE = 64;
 
 	public OpenCLFacade() {
 		initEngine();

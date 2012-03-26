@@ -70,7 +70,7 @@ public class GARCHImportanceSamplingTest {
 		LogGARCHDensityFunctionGPU lnftheta = new LogGARCHDensityFunctionGPU(p, q, sim.getY(), facade);
 		EqualFunction H = new EqualFunction(k);
 		int Mclose = (int) 1e6;
-		int M = ((Mclose / LogGARCHDensityFunctionGPU.DEFAULT_WARP_SIZE)+1) * LogGARCHDensityFunctionGPU.DEFAULT_WARP_SIZE;
+		int M = ((Mclose / OpenCLFacade.DEFAULT_WARP_SIZE)+1) * OpenCLFacade.DEFAULT_WARP_SIZE;
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
 		double[][] res = sampler.sample(M, true);
