@@ -48,5 +48,5 @@ is.garch.tstudent <- function(p, q, data, nr=1E6,
 }
 
 cannotInitGPU <- function() {
-  message("Cannot init GPU subsystem, try with useGPU=FALSE")
+  stop("Cannot init GPU subsystem, try with useGPU=FALSE", call.=FALSE)
 }
