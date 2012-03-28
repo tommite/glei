@@ -6,7 +6,7 @@
   Estimated a GARCH(p,q) model mean using importance sampling with
   Student's t candidate distribution
 }
-\usage{is.garch.tstudent(p, q, data, nr=1E6, mode=rep(0.5, (p+q)),
+\usage{is.garch.tstudent(p=1, q=1, data, nr=1E6, mode=rep(0.5, (p+q)),
 sigma=diag(p+q), dof=10, useGPU=TRUE)}
 \arguments{
 \item{p}{p of the GARCH model (length of the alpha-vector).}

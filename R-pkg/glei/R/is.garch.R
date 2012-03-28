@@ -2,7 +2,7 @@
 ## Important sampler parameters: nr
 ## Conditional t-student-distribution: mode, sigma, dof, data
 ## To use GPU or CPU for computation: useGPU
-is.garch.tstudent <- function(p, q, data, nr=1E6,
+is.garch.tstudent <- function(p=1, q=1, data, nr=1E6,
                               mode=rep(0.5, (p+q)),
                               sigma=diag(p+q), dof=10,
                               useGPU=TRUE) {
@@ -28,7 +28,7 @@ is.garch.tstudent <- function(p, q, data, nr=1E6,
   if (useGPU) {
     warpSize <- default.warpsize()
     if (nr %% warpSize != 0) {
-      nr = ceiling(nr / warpSize) * warpSize
+      nr = as.integer(ceiling(nr / warpSize) * warpSize)
       message("Number of iterations not multiple of warp size (", warpSize,
               ") - rounding up to ", nr, " iterations")
     }
