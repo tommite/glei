@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.jocl.CL;
+import org.jocl.CLException;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
@@ -46,7 +47,8 @@ public class OpenCLFacade {
 	private long maxMemAllocSize;
 	private long globalMemSize;
 	
-	public static final int DEFAULT_WARP_SIZE = 64;
+	public static final int DEFAULT_WARP_SIZE = 128;
+	public static final int DEFAULT_MAX_WORK_GROUP_SIZE = 128;
 
 	public OpenCLFacade() {
 		initEngine();
@@ -120,8 +122,13 @@ public class OpenCLFacade {
 		// store max work group size
 		int[] pBuf = new int[1];
 		long[] ret = new long[1];
-		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.cl_int, Pointer.to(pBuf), ret);
-		maxWorkGroupSize = pBuf[0];
+		try {
+			clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.cl_int, Pointer.to(pBuf), ret);
+			maxWorkGroupSize = pBuf[0];
+		} catch (CLException e) {
+			System.out.println("Cannot obtain MAX_WORK_GROUP_SIZE from GPU device; using default of " + DEFAULT_MAX_WORK_GROUP_SIZE);
+			maxWorkGroupSize = DEFAULT_MAX_WORK_GROUP_SIZE;
+		}
 		long[] pBuf2 = new long[1];
 		clGetDeviceInfo(device, CL.CL_DEVICE_MAX_MEM_ALLOC_SIZE, Sizeof.cl_long, Pointer.to(pBuf2), ret);
 		maxMemAllocSize = pBuf2[0];

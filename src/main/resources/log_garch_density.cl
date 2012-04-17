@@ -17,6 +17,7 @@ __kernel void log_garch_density(
 	__global const float *point = points + (pointsDim * pIndex);
 
 	float pSum = 0.0f;
+
 	for (int i=0;i<pointsDim;i++) {
 		if (point[i] < 0.0f) {
 			dst[pIndex] = -INFINITY;
@@ -44,8 +45,9 @@ __kernel void log_garch_density(
 	for (int t=tStar;t<nrData;t++) {
 		float alphaSum = 0.0f;
 		for (int i=0;i<p;i++) {
-			alphaSum += point[i] * native_powr(data[t-i-1], 2.0f);
+			alphaSum += point[i] * data[t-i-1] * data[t-i-1];
 		}
+
 		float betaSum = 0.0;
 		for (int j=0;j<q;j++) {
 			betaSum += point[p+j] * hArr[q-j-1];
@@ -60,7 +62,7 @@ __kernel void log_garch_density(
 		hArr[q-1] = ht;
 
 		lnF -= 0.5 * native_log(2.0f * 3.141592654f * ht);
-		lnF -= 0.5 * (native_powr(data[t], 2.0f) / ht);
+		lnF -= 0.5 * (data[t] * data[t]) / ht;
 	}
 
 	dst[pIndex] = lnF;

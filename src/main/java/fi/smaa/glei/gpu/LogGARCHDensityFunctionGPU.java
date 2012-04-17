@@ -47,7 +47,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 	
 	public void finalize() {
 		clReleaseProgram(program);
-		clReleaseKernel(kernel);	
+		clReleaseKernel(kernel);
 	}
 	
 	@Override
@@ -117,6 +117,7 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		clReleaseMemObject(tStarBuf);
 		clReleaseMemObject(hBuf);
 		clReleaseMemObject(resBuf);
+			
 		return float1dimToDouble1Dim(fResult);
 	}
 	
@@ -148,6 +149,5 @@ public class LogGARCHDensityFunctionGPU extends LogGARCHDensityFunction {
 		}
 		return res;
 	}
-
 
 }

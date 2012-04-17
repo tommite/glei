@@ -42,8 +42,8 @@ public class GARCHImportanceSamplingTest {
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
 		double[][] res = sampler.sample(M, true);
-		Assert.assertArrayEquals(res[0], new double[]{0.6920489}, 0.2);
-		Assert.assertArrayEquals(res[1], new double[]{0.1108320}, 0.2);		
+		Assert.assertArrayEquals(new double[]{0.6920489}, res[0], 0.2);
+		Assert.assertArrayEquals(new double[]{0.1108320}, res[1], 0.2);		
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class GARCHImportanceSamplingTest {
 		ImportanceSampler sampler = new ImportanceSampler(lngtheta, lnftheta, H, M, Theta);
 		
 		double[][] res = sampler.sample(M, true);
-		Assert.assertArrayEquals(res[0], new double[]{0.6920489}, 0.2);
-		Assert.assertArrayEquals(res[1], new double[]{0.1108320}, 0.2);		
+		Assert.assertArrayEquals(new double[]{0.6920489}, res[0], 0.2);
+		Assert.assertArrayEquals(new double[]{0.1108320}, res[1], 0.2);		
 	}
 }
