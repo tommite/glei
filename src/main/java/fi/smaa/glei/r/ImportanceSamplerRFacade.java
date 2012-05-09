@@ -20,6 +20,7 @@ import fi.smaa.glei.SamplingException;
 import fi.smaa.glei.StudentTLogDensityFunction;
 import fi.smaa.glei.gpu.LogGARCHDensityFunctionGPU;
 import fi.smaa.glei.gpu.LogIVDensityFunctionGPU;
+import fi.smaa.glei.gpu.LogIVDensityFunctionGPUv2;
 import fi.smaa.glei.gpu.OpenCLFacade;
 
 
@@ -52,10 +53,14 @@ public class ImportanceSamplerRFacade {
 		Function lnF = null;
 		if (useGPU == 0) {
 			lnF = new LogIVDensityFunction(y, x, zM.toArray());
-		} else if (useGPU == 1) {
+		} else {
 			OpenCLFacade facade = new OpenCLFacade();
 			try {
-				lnF = new LogIVDensityFunctionGPU(y, x, zM.toArray(), facade);
+				if (useGPU == 1) {
+					lnF = new LogIVDensityFunctionGPU(y, x, zM.toArray(), facade);
+				} else { // version 2
+					lnF = new LogIVDensityFunctionGPUv2(y, x, zM.toArray(), facade);					
+				}
 			} catch (IOException e) {
 				throw new SamplingException("Cannot load GPU kernel code: " + e.getMessage());
 			}

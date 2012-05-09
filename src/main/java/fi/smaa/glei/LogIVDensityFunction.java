@@ -5,11 +5,10 @@ import cern.jet.math.PlusMult;
 
 public class LogIVDensityFunction extends AbstractDimFunction {
 
-	protected int T;
 	protected double[] x;
 	protected double[] y;
 	protected double[][] z;
-	private static final double BIVARDEN1STTERM = -(2 / 2.0) * Math.log(2.0 * Math.PI);
+	public static final double BIVARDEN1STTERM = -(2 / 2.0) * Math.log(2.0 * Math.PI);
 
 	/**
 	 * 
@@ -20,7 +19,7 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 	public LogIVDensityFunction(double[] dataY, double[] dataX, double[][] dataZ) {
 		 // 4+z-dimension parameters in the points to be estimated: beta, Phi's, omega11, omega22, rho
 		super(dataZ[0].length + 4);
-		T = dataY.length;
+		int T = dataY.length;
 		if (dataX.length != T || dataZ.length != T) {
 			throw new IllegalArgumentException("dataY, dataX, and dataZ have to be of same dimensionality");
 		}
@@ -57,12 +56,12 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 		
 		double bivarfirst2terms = BIVARDEN1STTERM - 0.5 * Math.log(omegaDet);		
 		
-		res += iterateOverData(y, x, z, point, omegaInv11, omegaInv121, omegaInv22, bivarfirst2terms);
+		res += iterateOverData(point, omegaInv11, omegaInv121, omegaInv22, bivarfirst2terms);
 		
 		return res;
 	}
 
-	private static double iterateOverData(double[] y, double[] x, double[][] z, double[] point, 
+	protected double iterateOverData(double[] point, 
 			double omegaInv11, double omegaInv121, double omegaInv22,
 			double bivarfirst2terms) {
 		

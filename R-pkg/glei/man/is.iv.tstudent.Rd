@@ -11,7 +11,7 @@
 }
 \usage{is.iv.tstudent(y, x, z, nr=1E6, mode=c(0, rep(1,
 dim(as.matrix(z))[2]), 0.5, 0.5, 0), sigma=diag(dim(as.matrix(z))[2]+4),
-dof=10, useGPU=TRUE)}
+dof=10, useGPU=TRUE, gpuType=1)}
 \arguments{
 \item{y}{dependent variable of the data.}
 \item{x}{regressor of the data.}
@@ -21,7 +21,11 @@ dof=10, useGPU=TRUE)}
   1 for each instrumental variable, 0.5, 0.5, 0])}
 \item{sigma}{Sigma of the Student's t candidate distribution.}
 \item{dof}{Degrees of freedom of the Student's t candidate distribution.}
-\item{useGPU}{Whether to use GPU (TRUE) or CPU (FALSE) for the computations.}
+\item{useGPU}{Whether to use GPU (TRUE) or CPU (FALSE) for the
+  computations.}
+\item{gpuType}{Used only if useGPU=TRUE. Possible values: 1 or 2. Tells
+  the version of gpu to use. v1 = parallelization on MC iterations, v2 =
+  parallelization on data rows.}
 }
 \keyword{ts}
 \seealso{glei-package}

@@ -2,10 +2,11 @@
 ## Important sampler parameters: nr
 ## Conditional t-student-distribution: mode, sigma, dof, data
 ## To use GPU or CPU for computation: useGPU
+## If useGPU = true, gpuType tells which type of GPU to use (v1 or v2)
 is.iv.tstudent <- function(y, x, z, nr=1E6,
                            mode=c(0, rep(1, dim(as.matrix(z))[2]), 0.5, 0.5, 0),
                            sigma=diag(dim(as.matrix(z))[2]+4), dof=10,
-                           useGPU=TRUE) {
+                           useGPU=TRUE, gpuType=1) {
   nr <- as.integer(nr)
   dof <- as.integer(dof)
   x <- as.vector(x)
@@ -30,14 +31,16 @@ is.iv.tstudent <- function(y, x, z, nr=1E6,
     stop("z nr. rows must match y dimension")
   }
 
-  gpu <- 1
+  gpu <- gpuType
   if (useGPU) {
-    warpSize <- default.warpsize()
-    if (nr %% warpSize != 0) {
-      nr = as.integer(ceiling(nr / warpSize) * warpSize)
-      message("Number of iterations not multiple of warp size (", warpSize,
-              ") - rounding up to ", nr, " iterations")
-    }
+    if (gpuType == 1) {
+      warpSize <- default.warpsize()
+      if (nr %% warpSize != 0) {
+        nr = as.integer(ceiling(nr / warpSize) * warpSize)
+        message("Number of iterations not multiple of warp size (", warpSize,
+                ") - rounding up to ", nr, " iterations")
+      }
+    } 
   } else {
     gpu = 0
   } 
