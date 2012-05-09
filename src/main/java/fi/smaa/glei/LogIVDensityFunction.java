@@ -9,24 +9,20 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 	private double[] x;
 	private double[] y;
 	private double[][] z;
-	private static final int k = 2; // bi-variate normal density
-	// TODO: ask Nalan whether only bi-variate densities are allowed (k=2)
-	private static final double BIVARDEN1STTERM = -(k / 2.0) * Math.log(2.0 * Math.PI);
+	private static final double BIVARDEN1STTERM = -(2 / 2.0) * Math.log(2.0 * Math.PI);
 
 	/**
 	 * 
-	 * @param dataY
-	 * @param dataX
-	 * @param dataZ has to be a T x 2 matrix (bi-variate?) 
+	 * @param dataY vector of length T
+	 * @param dataX vector of length T
+	 * @param dataZ matrix with T rows  
 	 */
 	public LogIVDensityFunction(double[] dataY, double[] dataX, double[][] dataZ) {
-		super(6); // 6 parameters in the points to be estimated: beta, Phi, omega11, omega22, rho
+		 // 4+z-dimension parameters in the points to be estimated: beta, Phi's, omega11, omega22, rho
+		super(dataZ[0].length + 4);
 		T = dataY.length;
 		if (dataX.length != T || dataZ.length != T) {
 			throw new IllegalArgumentException("dataY, dataX, and dataZ have to be of same dimensionality");
-		}
-		if (dataZ[0].length != 2) {
-			throw new IllegalArgumentException("cannot handle other than bi-variate normal densities");
 		}
 		this.x = dataX;
 		this.y = dataY;
@@ -36,16 +32,16 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 	/**
 	 * Evaluates in the given point, that has all the components concatenated.
 	 * 
+	 * 4 + z-params
+	 * 
 	 * @param point to evaluate in (beta, Phi1, Phi2, omega11, omega22, rho)
 	 */
 	@Override	
 	protected double evaluateSingle(double[] point) {
 		double beta = point[0];
-		double Phi1 = point[1];
-		double Phi2 = point[2];
-		double omega11 = point[3];
-		double omega22 = point[4];
-		double rho = point[5];
+		double omega11 = point[point.length-3];
+		double omega22 = point[point.length-2];
+		double rho = point[point.length-1];
 		
 		if (omega11 <= 0.0 || omega22 <= 0.0 || rho < -1.0 || rho > 1.0) {
 			return Double.NEGATIVE_INFINITY;
@@ -63,15 +59,17 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 		double bivarfirst2terms = BIVARDEN1STTERM - 0.5 * Math.log(omegaDet);		
 		
 		for (int i=0;i<T;i++) {
-			assert(z[i].length == k); // sanity check
 			
 			double mean1 = y[i] - x[i] * beta;
-			double mean2 = x[i] - (z[i][0] * Phi1 + z[i][1] * Phi2);
+			double mean2 = x[i];
+			for (int j=0;j<this.dimension()-4;j++) {
+				mean2 -= point[j+1] * z[i][j];
+			}
 
 			// write open the 2 matrix multiplications
 			double mults = ((mean1  * omegaInv11 + mean2 * omegaInv121) * mean1) +
 					((mean1 * omegaInv121 + mean2 * omegaInv22) * mean2);
-			double dens = bivarfirst2terms - 0.5 * mults;			
+			double dens = bivarfirst2terms - 0.5 * mults;
 			res += dens;			
 		}
 		

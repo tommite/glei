@@ -1,27 +1,30 @@
-## GARCH model parameters: p, q
+## IV model parameters: y, x, z
 ## Important sampler parameters: nr
 ## Conditional t-student-distribution: mode, sigma, dof, data
 ## To use GPU or CPU for computation: useGPU
-is.garch.tstudent <- function(p=1, q=1, data, nr=1E6,
-                              mode=rep(0.5, (p+q)),
-                              sigma=diag(p+q), dof=10,
-                              useGPU=TRUE) {
-  p <- as.integer(p)
-  q <- as.integer(q)  
+is.iv.tstudent <- function(y, x, z, nr=1E6,
+                           mode=rep(0.5, 6),
+                           sigma=diag(6), dof=10,
+                           useGPU=TRUE) {
   nr <- as.integer(nr)
   dof <- as.integer(dof)
 
-  if (p < 1) {
-    stop("p has to be positive")
-  }
-  if (q < 1) {
-    stop("q has to be positive")
-  }
   if (nr < 1) {
     stop("nr has to be positive")
   }
   if (dof < 1) {
     stop("dof has to be positive")
+  }
+
+  xdim <- length(x)
+  ydim <- length(y)
+  zdim <- length(z)
+
+  if (xdim != ydim) {
+    stop("x dimension must match y dimension")
+  }
+  if (zdim[1] != ydim) {
+    stop("z nr. rows must match y dimension")
   }
 
   gpu <- 1
@@ -38,8 +41,11 @@ is.garch.tstudent <- function(p=1, q=1, data, nr=1E6,
 
 
   tryCatch(
-           .jcall("fi/smaa/glei/r/ImportanceSamplerRFacade", "[D", "GARCHimportanceSample",
-                  p, q, nr, dof, data, mode, as.vector(sigma),
+           .jcall("fi/smaa/glei/r/ImportanceSamplerRFacade", 
+                  "[D", "IVimportanceSample",
+                  as.vector(y), as.vector(x),
+                  as.vector(z), as.integer(nrow(z)),
+                  nr, dof, data, mode, as.vector(sigma),
                   as.integer(nrow(sigma)), as.integer(gpu),
                   simplify=TRUE),
            NoClassDefFoundError = function(e) {cannotInitGPU()},

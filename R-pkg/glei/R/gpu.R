@@ -1,3 +1,3 @@
 default.warpsize <- function() {
-  .jcall("fi/smaa/glei/r/GARCHRFacade", "I", "getWarpSize")
+  .jcall("fi/smaa/glei/r/ImportanceSamplerRFacade", "I", "getWarpSize")
 }
