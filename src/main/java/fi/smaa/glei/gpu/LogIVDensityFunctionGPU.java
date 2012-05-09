@@ -22,7 +22,6 @@ import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.jocl.cl_program;
 
-import fi.smaa.glei.LogGARCHDensityFunction;
 import fi.smaa.glei.LogIVDensityFunction;
 
 public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
@@ -54,7 +53,6 @@ public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
 	@Override
 	public double[] value(double[][] points) {
 		int nrPoints = points.length;
-		int pointsDim = points[0].length;
 		
 		if (nrPoints % warpSize != 0) {
 			throw new IllegalArgumentException("PRECOND violation: nrPoints % warpSize != 0");

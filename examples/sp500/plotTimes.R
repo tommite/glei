@@ -22,7 +22,7 @@ compRes <- function(useGPU, nr, sizes) {
 resCPU <- compRes(FALSE, nr, sizes)
 resGPU <- compRes(TRUE, nr, sizes)
 
-pdf('runtimeplot-gpu_vs_cpu.pdf')
+pdf('runtimeplot-garch-gpu_vs_cpu.pdf')
 matplot(y=t(rbind(resCPU[,3], resGPU[,3])), pch=1, ylab='time(s)', x=sizes, xlab='size(data)')
 legend(x='topleft', legend=c('cpu', 'gpu'), pch=1, col=c(1,2))
 dev.off()
