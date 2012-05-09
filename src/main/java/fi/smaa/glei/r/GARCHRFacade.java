@@ -53,6 +53,6 @@ public class GARCHRFacade {
 	}
 	
 	public static int getWarpSize() {
-		return OpenCLFacade.DEFAULT_WARP_SIZE;
+		return new OpenCLFacade().getMaxWorkGroupSize();
 	}
 }
