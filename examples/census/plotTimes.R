@@ -5,7 +5,7 @@ load('NY.Rdata')
 y=as.vector(dem.data$lnwwage.IV)
 x=as.vector(dem.data$educ.IV)
 z=as.matrix(dem.data$qob.IV[,1:3])
-nr <- 1e3
+nr <- 1e6
 sizes <- ceiling(seq(1, 10) * length(x)/10)
 
 compRes <- function(gputype, nr, sizes) {
