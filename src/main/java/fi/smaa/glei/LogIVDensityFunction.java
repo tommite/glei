@@ -5,10 +5,10 @@ import cern.jet.math.PlusMult;
 
 public class LogIVDensityFunction extends AbstractDimFunction {
 
-	private int T;
-	private double[] x;
-	private double[] y;
-	private double[][] z;
+	protected int T;
+	protected double[] x;
+	protected double[] y;
+	protected double[][] z;
 	private static final double BIVARDEN1STTERM = -(2 / 2.0) * Math.log(2.0 * Math.PI);
 
 	/**
@@ -70,7 +70,7 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 			double mults = ((mean1  * omegaInv11 + mean2 * omegaInv121) * mean1) +
 					((mean1 * omegaInv121 + mean2 * omegaInv22) * mean2);
 			double dens = bivarfirst2terms - 0.5 * mults;
-			res += dens;			
+			res += dens;
 		}
 		
 		return res;

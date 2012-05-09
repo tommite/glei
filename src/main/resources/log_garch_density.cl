@@ -1,17 +1,14 @@
 __kernel void log_garch_density(
-		__global int *pp, __global int *pq,
-		__global int *pnrData, __global const float * data,
-		__global int *ppointsDim, __global const float * points,
-		__global int* ptStar,
+		int p, 
+		int q,
+		int nrData,
+		__global const float * data,
+		int pointsDim,
+		__global const float * points,
+		int tStar,
 		__global const float * h,
 		__global float * dst)
-{
-	int p = *pp;
-	int q = *pq;
-	int nrData = *pnrData;
-	int pointsDim = *ppointsDim;
-	int tStar = *ptStar;
-	
+{	
 	int pIndex = get_global_id(0);
 
 	__global const float *point = points + (pointsDim * pIndex);
