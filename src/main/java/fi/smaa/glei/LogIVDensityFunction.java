@@ -1,6 +1,5 @@
 package fi.smaa.glei;
 
-import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.jet.math.PlusMult;
 
@@ -61,20 +60,19 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 		
 		double res = (-3.0 / 2.0) * Math.log(omegaDet);
 		
+		double bivarfirst2terms = BIVARDEN1STTERM - 0.5 * Math.log(omegaDet);		
+		
 		for (int i=0;i<T;i++) {
 			assert(z[i].length == k); // sanity check
 			
 			double mean1 = y[i] - x[i] * beta;
 			double mean2 = x[i] - (z[i][0] * Phi1 + z[i][1] * Phi2);
-			
-			double toAdd = bivariateLogNormalDensity(omegaDet,
-					DoubleFactory2D.dense.make(new double[][]{
-						{omegaInv11, omegaInv121},
-						{omegaInv121, omegaInv22}
-					}),
-					DoubleFactory2D.dense.make(new double[][]{{mean1, mean2}}),
-					DoubleFactory2D.dense.make(new double[][]{{0.0, 0.0}}));
-			res += toAdd;
+
+			// write open the 2 matrix multiplications
+			double mults = ((mean1  * omegaInv11 + mean2 * omegaInv121) * mean1) +
+					((mean1 * omegaInv121 + mean2 * omegaInv22) * mean2);
+			double dens = bivarfirst2terms - 0.5 * mults;			
+			res += dens;			
 		}
 		
 		return res;
@@ -88,7 +86,7 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 		double bivarfirst2terms = BIVARDEN1STTERM - 0.5 * Math.log(omegaDet);
 		DoubleMatrix2D mults = ym.zMult(omegaInv, null, 1.0, 1.0, false, false);
 		DoubleMatrix2D matres = mults.zMult(ym, null, 1.0, 1.0, false, true);
-		
+				
 		return bivarfirst2terms - 0.5 * matres.get(0, 0);
 	}
 
