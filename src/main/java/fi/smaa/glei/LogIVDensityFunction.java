@@ -38,7 +38,6 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 	 */
 	@Override	
 	protected double evaluateSingle(double[] point) {
-		double beta = point[0];
 		double omega11 = point[point.length-3];
 		double omega22 = point[point.length-2];
 		double rho = point[point.length-1];
@@ -58,11 +57,22 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 		
 		double bivarfirst2terms = BIVARDEN1STTERM - 0.5 * Math.log(omegaDet);		
 		
-		for (int i=0;i<T;i++) {
+		res += iterateOverData(y, x, z, point, omegaInv11, omegaInv121, omegaInv22, bivarfirst2terms);
+		
+		return res;
+	}
+
+	private static double iterateOverData(double[] y, double[] x, double[][] z, double[] point, 
+			double omegaInv11, double omegaInv121, double omegaInv22,
+			double bivarfirst2terms) {
+		
+		double res = 0.0;
+		double beta = point[0];
+		for (int i=0;i<y.length;i++) {
 			
 			double mean1 = y[i] - x[i] * beta;
 			double mean2 = x[i];
-			for (int j=0;j<this.dimension()-4;j++) {
+			for (int j=0;j<z[0].length;j++) {
 				mean2 -= point[j+1] * z[i][j];
 			}
 
@@ -72,7 +82,6 @@ public class LogIVDensityFunction extends AbstractDimFunction {
 			double dens = bivarfirst2terms - 0.5 * mults;
 			res += dens;
 		}
-		
 		return res;
 	}
 
