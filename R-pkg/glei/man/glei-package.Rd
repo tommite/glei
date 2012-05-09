@@ -13,7 +13,7 @@
   Maintainer: Tommi Tervonen <tommi@smaa.fi>
 }
 \keyword{ts}
-\seealso{is.garch.tstudent}
+\seealso{is.garch.tstudent, is.iv.tstudent}
 \examples{
 # Set Java VM memory use to 2g not to run out of heap space
 options( java.parameters = "-Xmx2g" )

@@ -1,2 +1,3 @@
 import("rJava")
 export("is.garch.tstudent")
+export("is.iv.tstudent")

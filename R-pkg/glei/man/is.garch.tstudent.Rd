@@ -3,7 +3,7 @@
 \title{GARCH estimation through importance sampler with Student's t
   candidate distribution}
 \description{
-  Estimated a GARCH(p,q) model mean using importance sampling with
+  Estimates a GARCH(p,q) model mean using importance sampling with
   Student's t candidate distribution
 }
 \usage{is.garch.tstudent(p=1, q=1, data, nr=1E6, mode=rep(0.5, (p+q)),

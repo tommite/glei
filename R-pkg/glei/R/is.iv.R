@@ -3,11 +3,14 @@
 ## Conditional t-student-distribution: mode, sigma, dof, data
 ## To use GPU or CPU for computation: useGPU
 is.iv.tstudent <- function(y, x, z, nr=1E6,
-                           mode=rep(0.5, 6),
-                           sigma=diag(6), dof=10,
+                           mode=c(0, rep(1, dim(as.matrix(z))[2]), 0.5, 0.5, 0),
+                           sigma=diag(dim(as.matrix(z))[2]+4), dof=10,
                            useGPU=TRUE) {
   nr <- as.integer(nr)
   dof <- as.integer(dof)
+  x <- as.vector(x)
+  y <- as.vector(y)
+  z <- as.matrix(z)
 
   if (nr < 1) {
     stop("nr has to be positive")
@@ -18,7 +21,7 @@ is.iv.tstudent <- function(y, x, z, nr=1E6,
 
   xdim <- length(x)
   ydim <- length(y)
-  zdim <- length(z)
+  zdim <- dim(z)
 
   if (xdim != ydim) {
     stop("x dimension must match y dimension")

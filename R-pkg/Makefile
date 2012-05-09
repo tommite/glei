@@ -1,5 +1,5 @@
-CURPKG=glei_0.2.tar.gz
-CURJAVAPKG=glei-0.1-jar-with-dependencies.jar
+CURPKG=glei_0.4.tar.gz
+CURJAVAPKG=glei-0.2-jar-with-dependencies.jar
 
 ${CURPKG}: ../target/${CURJAVAPKG} glei/R/*.R glei/man/*.Rd glei/DESCRIPTION glei/NAMESPACE
 	rm -Rf glei/inst/java

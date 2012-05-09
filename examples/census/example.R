@@ -1,0 +1,6 @@
+library(glei)
+load('NY.Rdata')
+y=as.vector(dem.data$lnwwage.IV)
+x=as.vector(dem.data$educ.IV)
+z=as.matrix(dem.data$qob.IV[,1:3])
+is.iv.tstudent(y=y, x=x, z=z, nr=1000, useGPU=FALSE)

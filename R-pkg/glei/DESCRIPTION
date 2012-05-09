@@ -1,6 +1,6 @@
 Package: glei
-Version: 0.2
-Date: 2012-02-20
+Version: 0.4
+Date: 2012-05-09
 Title: Gpu computation Library from the Econometric Institute
 Author: Tommi Tervonen
 Maintainer: Tommi Tervonen <tommi@smaa.fi>
