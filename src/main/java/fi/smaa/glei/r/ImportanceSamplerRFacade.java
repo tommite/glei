@@ -28,14 +28,12 @@ public class ImportanceSamplerRFacade {
 
 	public static double[] GARCHimportanceSample(int p, int q, int nrDraws, int dof, double[] data,
 			double[] mu, double[] sigmaVec, int nrowSigma, int useGPU) throws SamplingException {
-
 		Function lnF = null;
 		if (useGPU == 0) {
 			lnF = new LogGARCHDensityFunction(p, q, data);
 		} else if (useGPU == 1) {
-			OpenCLFacade facade = new OpenCLFacade();
 			try {
-				lnF = new LogGARCHDensityFunctionGPU(p, q, data, facade);
+				lnF = new LogGARCHDensityFunctionGPU(p, q, data, OpenCLFacade.getInstance());
 			} catch (IOException e) {
 				throw new SamplingException("Cannot load GPU kernel code: " + e.getMessage());
 			}
@@ -47,30 +45,30 @@ public class ImportanceSamplerRFacade {
 	public static double[] IVimportanceSample(double[] y, double[] x, double[] z, int nRowZ,
 			int nrDraws, int dof, double[] mu, double[] sigmaVec, int nrowSigma,
 			int useGPU) throws SamplingException {
-
+		
 		DoubleMatrix2D zM = RHelper.rArrayMatrixToMatrix2D(z, nRowZ);
 
 		Function lnF = null;
 		if (useGPU == 0) {
 			lnF = new LogIVDensityFunction(y, x, zM.toArray());
 		} else {
-			OpenCLFacade facade = new OpenCLFacade();
 			try {
 				if (useGPU == 1) {
-					lnF = new LogIVDensityFunctionGPU(y, x, zM.toArray(), facade);
+					lnF = new LogIVDensityFunctionGPU(y, x, zM.toArray(), OpenCLFacade.getInstance());
 				} else { // version 2
-					lnF = new LogIVDensityFunctionGPUv2(y, x, zM.toArray(), facade);					
+					lnF = new LogIVDensityFunctionGPUv2(y, x, zM.toArray(), OpenCLFacade.getInstance());					
 				}
 			} catch (IOException e) {
 				throw new SamplingException("Cannot load GPU kernel code: " + e.getMessage());
 			}
 		}
 
-		return importanceSample(nrDraws, dof, mu, sigmaVec, nrowSigma, lnF);
+		double[] res = importanceSample(nrDraws, dof, mu, sigmaVec, nrowSigma, lnF);
+		return res;
 	}
 
 	public static int getWarpSize() {
-		return new OpenCLFacade().getMaxWorkGroupSize();
+		return OpenCLFacade.getInstance().getMaxWorkGroupSize();
 	}
 
 	protected static double[] importanceSample(int nrDraws, int dof, double[] mu,

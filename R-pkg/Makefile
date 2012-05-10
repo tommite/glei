@@ -14,6 +14,7 @@ all: ${CURPKG}
 	mvn -f ../pom.xml package
 
 clean:
+	-rm ${CURJAVAPKG}
 	-rm ${CURPKG}
 	-rm -Rf glei/inst
 

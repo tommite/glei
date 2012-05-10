@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
@@ -30,15 +31,14 @@ public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
 	public static final String KERNEL_FUNCNAME = "log_iv_density";
 	private OpenCLFacade facade;
 	private cl_program program;
-	private cl_kernel kernel;
 	private long warpSize;
 	
 	protected LogIVDensityFunctionGPU(double[] y, double[] x, double[][] z, OpenCLFacade facade, long warpSize) throws IOException {
 		super(y, x, z);
 		this.facade = facade;
-		program = facade.buildProgram(KERNEL_FILENAME);
-		kernel = clCreateKernel(program, KERNEL_FUNCNAME, null);
 		this.warpSize = warpSize;
+		
+		program = facade.buildProgram(KERNEL_FILENAME);
 	}
 	
 	public LogIVDensityFunctionGPU(double[]y, double[] x, double[][] z, OpenCLFacade facade) throws IOException {
@@ -47,11 +47,13 @@ public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
 	
 	public void finalize() {
 		clReleaseProgram(program);
-		clReleaseKernel(kernel);
 	}
 	
 	@Override
 	public double[] value(double[][] points) {
+		
+		cl_kernel kernel = clCreateKernel(program, KERNEL_FUNCNAME, null);
+		
 		int nrPoints = points.length;
 		
 		if (nrPoints % warpSize != 0) {
@@ -94,12 +96,13 @@ public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
 		long local_work_size[] = new long[]{warpSize};
 		long global_work_size[] = new long[]{nrPoints};
 		
+		cl_command_queue queue = facade.getCommandQueue();
 		// Execute the kernel
-		clEnqueueNDRangeKernel(facade.getCommandQueue(), kernel, 1, null,
+		clEnqueueNDRangeKernel(queue, kernel, 1, null,
 				global_work_size, local_work_size, 0, null, null);
 
 		// read result
-		clEnqueueReadBuffer(facade.getCommandQueue(), resBuf, CL_TRUE, 0,
+		clEnqueueReadBuffer(queue, resBuf, CL_TRUE, 0,
 				nrPoints * Sizeof.cl_float, Pointer.to(fResult), 0, null, null);
 		
 		// deallocate memory
@@ -108,6 +111,8 @@ public class LogIVDensityFunctionGPU extends LogIVDensityFunction {
 		clReleaseMemObject(zBuf);				
 		clReleaseMemObject(pointsBuf);
 		clReleaseMemObject(resBuf);
+		
+		clReleaseKernel(kernel);
 			
 		return GPUHelper.float1dimToDouble1Dim(fResult);
 	}

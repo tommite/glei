@@ -40,6 +40,13 @@ is.iv.tstudent <- function(y, x, z, nr=1E6,
         message("Number of iterations not multiple of warp size (", warpSize,
                 ") - rounding up to ", nr, " iterations")
       }
+    } else {
+      warpSize <- 16
+      if (nr %% warpSize != 0) {
+        nr = as.integer(ceiling(nr / warpSize) * warpSize)
+        message("Number of iterations not multiple of block size (", warpSize,
+                ") - rounding up to ", nr, " iterations")
+      }
     } 
   } else {
     gpu = 0

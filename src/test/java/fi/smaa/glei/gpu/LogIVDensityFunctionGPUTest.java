@@ -12,7 +12,7 @@ public class LogIVDensityFunctionGPUTest {
 
 	@BeforeClass
 	public static void setUpSuite() {
-		fac = new OpenCLFacade();
+		fac = OpenCLFacade.getInstance();
 	}
 	
 	@Test

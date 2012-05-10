@@ -15,7 +15,7 @@ public class OpenCLFacadeTest {
 
 	@Before
 	public void setUp() {
-		f = new OpenCLFacade();
+		f = OpenCLFacade.getInstance();
 	}
 
 	@Test

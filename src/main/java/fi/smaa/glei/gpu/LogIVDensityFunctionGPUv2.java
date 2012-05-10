@@ -26,8 +26,8 @@ import fi.smaa.glei.LogIVDensityFunction;
 
 public class LogIVDensityFunctionGPUv2 extends LogIVDensityFunction {
 
-	public static final String KERNEL_FILENAME = "log_iv_density_v3.cl";
-	public static final String KERNEL_FUNCNAME = "log_iv_density_v3";
+	public static final String KERNEL_FILENAME = "log_iv_density_v2.cl";
+	public static final String KERNEL_FUNCNAME = "log_iv_density_v2";
 	private OpenCLFacade facade;
 	private cl_program program;
 	private cl_kernel kernel;
@@ -43,26 +43,20 @@ public class LogIVDensityFunctionGPUv2 extends LogIVDensityFunction {
 		super(dataY, dataX, dataZ);
 		this.blockSize = blockSize;
 		this.facade = facade;
-		if (dataY.length % blockSize != 0) {
-			throw new IllegalArgumentException("PRECOND violation: dataY.length % warpSize != 0");
-		}
 		if (blockSize > facade.getMaxWorkGroupSize()) {
 			throw new IllegalArgumentException("PRECOND violation: warpSize > facade.getMaxWorkGroupSize()");
 		}
-		initCLStuff();
-	}
-
-	public LogIVDensityFunctionGPUv2(double[] dataY, double[] dataX, double[][] dataZ, OpenCLFacade facade) throws IOException {
-		super(dataY, dataX, dataZ);
-		this.facade = facade;		
-		blockSize = BLOCK_SIZE;
 		// if data is not exactly correct row sizes, append new rows
 		appendedRows = dataY.length % blockSize;
 		if (appendedRows != 0) {
 			appendedRows = blockSize - appendedRows;
 		}
-		appendEmptyRowsTodata();		
+		appendEmptyRowsTodata();
 		initCLStuff();
+	}
+
+	public LogIVDensityFunctionGPUv2(double[] dataY, double[] dataX, double[][] dataZ, OpenCLFacade facade) throws IOException {
+		this(dataY, dataX, dataZ, facade, BLOCK_SIZE);
 	}
 
 	public int getAppendedRows() {
@@ -156,7 +150,7 @@ public class LogIVDensityFunctionGPUv2 extends LogIVDensityFunction {
 		// read result
 		float[] fResult = new float[nrPoints*nrData];		
 		clEnqueueReadBuffer(facade.getCommandQueue(), resBuf, CL_TRUE, 0,
-				nrPoints * Sizeof.cl_float, Pointer.to(fResult), 0, null, null);
+				nrPoints * nrData * Sizeof.cl_float, Pointer.to(fResult), 0, null, null);
 
 		// deallocate memory
 		clReleaseMemObject(pointsBuf);
@@ -173,8 +167,13 @@ public class LogIVDensityFunctionGPUv2 extends LogIVDensityFunction {
 			double omegaDet = (omega11 * omega22) - (Om121 * Om121);
 			double res = (-3.0f / 2.0f) * Math.log(omegaDet);
 
-			for (int j=0;j<nrData-this.appendedRows;j++) {
-				res += fResult[i * nrData + j];
+			if (omega11 <= 0.0f || omega22 <= 0.0f || rho < -1.0f || rho > 1.0f) {
+				res = Double.NEGATIVE_INFINITY;
+			} else {
+				for (int j=0;j<nrData-this.appendedRows;j++) {
+					float gpuRes = fResult[i * nrData + j];
+					res += gpuRes;
+				}
 			}
 			finRes[i] = res;
 		}

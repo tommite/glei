@@ -1,20 +1,16 @@
 package fi.smaa.glei.gpu;
 
 import static org.jocl.CL.CL_CONTEXT_PLATFORM;
-
 import static org.jocl.CL.CL_DEVICE_TYPE_GPU;
-import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
-import static org.jocl.CL.CL_MEM_READ_ONLY;
 import static org.jocl.CL.clBuildProgram;
-import static org.jocl.CL.clCreateBuffer;
 import static org.jocl.CL.clCreateCommandQueue;
 import static org.jocl.CL.clCreateContext;
 import static org.jocl.CL.clCreateProgramWithSource;
 import static org.jocl.CL.clGetDeviceIDs;
+import static org.jocl.CL.clGetDeviceInfo;
 import static org.jocl.CL.clGetPlatformIDs;
 import static org.jocl.CL.clReleaseCommandQueue;
 import static org.jocl.CL.clReleaseContext;
-import static org.jocl.CL.clGetDeviceInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +25,6 @@ import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
-import org.jocl.cl_mem;
 import org.jocl.cl_platform_id;
 import org.jocl.cl_program;
 
@@ -49,8 +44,17 @@ public class OpenCLFacade {
 	
 	public static final int DEFAULT_WARP_SIZE = 128;
 	public static final int DEFAULT_MAX_WORK_GROUP_SIZE = 128;
+	
+	private static OpenCLFacade instance = null;
+	
+	public static OpenCLFacade getInstance() {
+		if (instance == null) {
+			instance = new OpenCLFacade();
+		}
+		return instance;		
+	}
 
-	public OpenCLFacade() {
+	private OpenCLFacade() {
 		initEngine();
 		initDevice(deviceIndex);
 	}
@@ -152,19 +156,11 @@ public class OpenCLFacade {
 		return maxWorkGroupSize;
 	}
 	
-	public cl_mem createIntArgBuffer(int value) {
-		int[] argv = new int[1];
-		argv[0] = value;
-		return clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_int, Pointer.to(argv), null);
-	}
-
 	public cl_command_queue getCommandQueue() {
 		return commandQueue;
 	}
 	
-	@Override
-	public void finalize() {
+	public void cleanUp() {
 		clReleaseCommandQueue(commandQueue);
 		clReleaseContext(context);
 	}

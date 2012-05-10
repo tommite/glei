@@ -48,7 +48,7 @@ public class GARCHImportanceSamplingTest {
 	
 	@Test
 	public void testNalansTestWithGPU() throws SamplingException, IOException {
-		OpenCLFacade facade = new OpenCLFacade();		
+		OpenCLFacade facade = OpenCLFacade.getInstance();		
 		RandomEngine engine = new MersenneTwister(0x667);
 		double alpha = 0.8, beta = 0.0;
 		double sigma2 = 1.0 - alpha - beta;

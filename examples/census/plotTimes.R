@@ -1,3 +1,5 @@
+# Set Java VM memory use to 2g not to run out of heap space
+options( java.parameters = "-Xmx2g" )
 library(glei)
 
 ## Read data
@@ -6,20 +8,24 @@ y=as.vector(dem.data$lnwwage.IV)
 x=as.vector(dem.data$educ.IV)
 z=as.matrix(dem.data$qob.IV[,1:3])
 nr <- 1e6
+
+is.iv.tstudent(y, x, z)
+
 sizes <- ceiling(seq(1, 10) * length(x)/10)
 
 compRes <- function(gputype, nr, sizes) {
   t(sapply(sizes, function(len) {
+	print(len)
     t <- system.time(
                      res <- is.iv.tstudent(y=y[1:len], x=x[1:len], z=z[1:len,], nr=nr, useGPU=gputype>0, gpuType=gputype)
                      )[3]
+	Sys.sleep(2)
     return(c(t, res))
   }))
 }
 
 resCPU <- compRes(0, nr, sizes)
 resGPU1 <- compRes(1, nr, sizes)
-resGPU2 <- compRes(2, nr, sizes)
 
 pdf('runtimeplot-iv-gpu_vs_cpu.pdf')
 matplot(y=t(rbind(resCPU[,1], resGPU1[,1], resGPU2[,1])), pch=1, ylab='time(s)', x=sizes, xlab='size(data)')

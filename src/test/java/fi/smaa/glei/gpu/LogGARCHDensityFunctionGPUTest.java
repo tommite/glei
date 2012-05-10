@@ -13,7 +13,7 @@ public class LogGARCHDensityFunctionGPUTest {
 
 	@BeforeClass
 	public static void setUpSuite() {
-		fac = new OpenCLFacade();
+		fac = OpenCLFacade.getInstance();
 	}
 
 	@Test
