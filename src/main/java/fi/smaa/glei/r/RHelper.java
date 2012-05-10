@@ -1,6 +1,5 @@
 /*
- * This file is part of libror.
- * libror is distributed from http://smaa.fi/libror
+ * This file is part of glei.
  * Copyright (C) 2011-12 Tommi Tervonen.
  *
  * This program is free software: you can redistribute it and/or modify
