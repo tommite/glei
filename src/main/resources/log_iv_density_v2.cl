@@ -9,7 +9,8 @@ __kernel void log_iv_density_v2(
 		float omegaInv121,
 		float omegaInv22)
 {
-	int i = get_global_id(0);
+	int dataIndex = get_global_id(0);
+	int pointIndex = get_global_id(1);
 	
 	float beta = point[0];
 	float mean1 = y[i] - x[i] * beta;
