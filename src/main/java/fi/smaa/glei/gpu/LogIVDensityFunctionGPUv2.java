@@ -173,7 +173,7 @@ public class LogIVDensityFunctionGPUv2 extends LogIVDensityFunction {
 			double omegaDet = (omega11 * omega22) - (Om121 * Om121);
 			double res = (-3.0f / 2.0f) * Math.log(omegaDet);
 
-			for (int j=0;j<nrData;j++) {
+			for (int j=0;j<nrData-this.appendedRows;j++) {
 				res += fResult[i * nrData + j];
 			}
 			finRes[i] = res;

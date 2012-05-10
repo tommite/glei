@@ -41,7 +41,7 @@ public class LogIVDensityFunctionGPUv2Test {
 		// evaluate at (beta, Phi1, Phi2, omega11, omega22, rho)
 		double[][] point = new double[][] {{1.0, 0.0, 2.0, 1.0, 2.0, 0.5}};
 		
-		LogIVDensityFunctionGPUv2 iv = new LogIVDensityFunctionGPUv2(y, x, z, fac, 1);
+		LogIVDensityFunctionGPUv2 iv = new LogIVDensityFunctionGPUv2(y, x, z, fac, LogIVDensityFunctionGPUv2.BLOCK_SIZE);
 		Assert.assertArrayEquals(new double[]{-23.9727}, iv.value(point), 0.001);
 	}
 }
