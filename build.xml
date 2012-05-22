@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="warn" name="glei">
+	<target name="warn">
+		<echo>Please use Maven2!</echo>
+	</target>
+
+	<loadfile property="header" srcFile="HEADER" />
+
+	<target name="license">
+		<replaceregexp flags="s"
+			match=".*package fi.smaa.glei"
+			replace="${header}package fi.smaa.glei">
+			<fileset dir="src">
+				<include name="**/*.java" />
+			</fileset>
+		</replaceregexp>
+	</target>
+</project>

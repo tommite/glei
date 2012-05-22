@@ -1,6 +1,6 @@
 /*
  * This file is part of glei.
- * Copyright (C) 2011-12 Tommi Tervonen.
+ * Copyright (C) 2012 Tommi Tervonen.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -25,7 +25,7 @@ dof=10, useGPU=TRUE, gpuType=1)}
   computations.}
 \item{gpuType}{Used only if useGPU=TRUE. Possible values: 1 or 2. Tells
   the version of gpu to use. v1 = parallelization on MC iterations, v2 =
-  parallelization on data rows.}
+  parallelization also data rows. Note that v2 is extremely memory consuming and might not work on most problems.}
 }
 \keyword{ts}
 \seealso{glei-package}
