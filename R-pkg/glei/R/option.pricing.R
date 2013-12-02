@@ -1,4 +1,3 @@
-
 grid.search <- function(g, f, param, find.val, ...) {
     g <- cbind(g, apply(g, 1, f, ...))
 
@@ -29,4 +28,49 @@ grid.search <- function(g, f, param, find.val, ...) {
         max.rows <- max.rows[1,]
     }
     max.rows
+}
+
+##
+## gamma, sigma: distribution params
+## 
+sim.returns.skewed.normal <- function(gamma, sigma, n, T) {
+    if(n<1 | (n%%1!=0))
+        stop("'n' should be an integer >0")
+    if(gamma <= 0)
+        stop("'gamma' should be positive")
+    if(sigma <= 0)
+        stop("'sigma' should be positive")
+
+    sumReturns <- rep(0,n)
+    ## prob(x>0)
+    ppos <- gamma / (1/gamma + gamma)
+    ## prob(x<=0)
+    pneg <- 1 - ppos
+  
+    for(t in 1:T){
+        ## simulate from standard normal, positive values
+        simnorm <- abs(rnorm(n))
+        ## simulate indicator, for positive return values
+        simsign <- as.numeric(runif(n) < ppos)
+ 
+        ## element by element multiplication
+        x <- (1/sqrt(252)) * simnorm * sigma * (simsign*gamma - (1-simsign)/gamma) 
+        sumReturns <- sumReturns + x
+    }
+    return(sumReturns)
+}
+
+## Function to simulate returns from skewed normal distribution 
+## inputs:
+##   n     : [integer>0] number of simulations
+##   T     : [integer>0] days to maturity
+## outputs:
+##  mean_PayoffK : [double] mean payoff evaluations
+f.t.k.skewed.normal <- function(f0k, fun, n,T){
+    tmp <- sim.returns.skewed.normal(fun,n,T)
+    tmp <- exp(tmp) / mean(exp(tmp))
+    FtK <- tmp * f0k
+    PayoffK <- (FtK > 1) * (FtK - 1) # element by element
+    mean_PayoffK <- mean(PayoffK)
+    return(mean_PayoffK)
 }
