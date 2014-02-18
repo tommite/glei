@@ -37,7 +37,7 @@ double ftk_skewed_normal(double f0k, double gamma, double sigma, int n, int T) {
   }
 
   free(result);
-y
+
   return final_res / n;
 }
 
@@ -56,20 +56,18 @@ void sim_returns_skewed_normal(double f0k, double gamma, double sigma, int n, in
   double *simnorm = (double *) malloc(n * sizeof(double));
   double *simsign = (double *) malloc(n * sizeof(double));
 
-  double result = 0.0;
-
   const double const1 = 1.0 / sqrt(NR_WORKING_DAYS_PER_YEAR);
 
   // empty result
-  memcpy(result, &0.0, n * sizeof(double));
+  memset(result, 0, n * sizeof(double));
 
   for (int t=0;t<T;t++) {
     fill_simnorm(simnorm, n);
     fill_simsign(simsign, n, ppos);
 
     for (int i=0;i<n;i++) {
-      result[i] += const1 * simnorm[i] * sigma[i] * 
-	(simsign[i] * gamma[i] - (1.0 - simsign[i]) / gamma[i]);
+      result[i] += const1 * simnorm[i] * sigma * 
+	(simsign[i] * gamma - (1.0 - simsign[i]) / gamma);
     }
   }
 
@@ -77,14 +75,4 @@ void sim_returns_skewed_normal(double f0k, double gamma, double sigma, int n, in
   free(simsign);
 }
 
-void fill_simsign(double *simsign, int size, double ppos) {
-  for (int i=0;i<size;i++) {
-    simsign[i] = runif(0.0, 1.0) < ppos ? 1.0 : 0.0;
-  }
-}
 
-void fill_simnorm(double *simnorm, int size) {
-  for (int i=0;i<size;i++) {
-    simnorm[i] = abs(rnorm(0.0, 1.0));
-  }
-}
