@@ -1,11 +1,4 @@
-### Test grid.search ###
-params <- list('v1' = seq(0, 1, length=4),
-               'v2' = seq(0, 1, length=2),
-               'v3' = seq(5, 6, length=2)
-               )
-g <- expand.grid(params)
-max.row <- grid.search(g, sum, 1, 0.2)
-stopifnot(all(max.row == c(0.2, 1.0, 6.0, 7.2)))
+source('option.pricing.R')
 
 ### Test sim.returns.skewed.normal ### TODO: Nalan fix, test not working
 eps <- 1E-3
@@ -88,5 +81,5 @@ params <- list('v1' = seq(0.8, 1.2, length=11),
 grids <- as.matrix(expand.grid(params))
 
 out <- option.pricing(grids, n, f0k, Kvec, C, r, T)
-cat("output$par should be the same upto 1 digit")
+cat("out$par should be the same upto 1 digit")
 print(out$par)

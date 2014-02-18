@@ -1,15 +1,29 @@
+###
+## Performs a grid search for g on column index param, to produce
+## a new grid where: g[,param] == find.val and last column of g is interpolated
+## (linearly).
+##
+## PRE-COND: find.val >= min(g[,param]) && find.val <= max(g[,param])
+## g: grid to search on (each row is one grid point, last column point value)
+## param: index of the column to search on
+## find.val: the value to search for
 grid.search <- function(g, param, find.val) {
+    stopifnot(find.val >= min(g[,param]) && find.val <= max(g[,param]))
     lb <- max(g[g[,param] <= find.val,param])
     ub <- min(g[g[,param] >= find.val,param])
+
+    if (lb == ub) {
+        return(g[g[,param] == lb,])
+    }
 
     mod.inds <- which(g[,param] %in% c(lb, ub))
     rows <- g[mod.inds,]
     rest.indices <- c(-param, -ncol(rows))
 
-    ip.cases <- unique(rows[,rest.indices])
+    ip.cases <- as.matrix(unique(rows[,rest.indices]))
 
     res <- apply(ip.cases, 1, function(ip) {
-        ip.rows <- rows[apply(rows[,rest.indices], 1, function(x) {all(ip == x)}),]
+        ip.rows <- rows[apply(as.matrix(rows[,rest.indices]), 1, function(x) {all(ip == x)}),]
         approx(x=ip.rows[,param], y=ip.rows[,ncol(ip.rows)], xout=find.val)$y
     })
 
@@ -71,24 +85,23 @@ f.t.k.skewed.normal <- function(f0k, gamma, sigma, n,T){
     return(mean_PayoffK)
 }
 
-                                        # Function to get SSR values in 2nd step
-                                        # inputs:
-                                        #   grids : l dimentional list of grids, each element is a vector of sizes (n1,...,nl)
-                                        # Funongrids: [matrix DxK], K=(l+1) for l parameters, D is the number of grid points 
-                                        #   F0_K  : [vector, size k] of interpolation values for the first parameter in 'param'
-                                        #   Kvec     : [vector, size k] of strike prices (data)
-                                        #   C     : [vector, size k] of call option prices (data)
-                                        #   r     : [double>0] interest rate (annual)
-                                        #   T     : [integer>0] days to maturity
-                                        # outputs:
-                                        #  list containing the following:
-                                        #    minPars : [vector size (l-1)] of optimal parameter values, giving min SSR
-                                        #    minSSR  : [double] SSR value
-                                        #    SSRs    : [vector size (n2xn3x...xnl)] of SSR values
-
-                                        #fixme: rm grids
+## Function to get SSR values in 2nd step
+## inputs:
+##   grids : l dimentional list of grids, each element is a vector of sizes (n1,...,nl)
+## Funongrids: [matrix DxK], K=(l+1) for l parameters, D is the number of grid points
+##   F0_K  : [vector, size k] of interpolation values for the first parameter in 'param'
+##   Kvec     : [vector, size k] of strike prices (data)
+##   C     : [vector, size k] of call option prices (data)
+##   r     : [double>0] interest rate (annual)
+##   T     : [integer>0] days to maturity
+## outputs:
+##  list containing the following:
+##    minPars : [vector size (l-1)] of optimal parameter values, giving min SSR
+##    minSSR  : [double] SSR value
+##    SSRs    : [vector size (n2xn3x...xnl)] of SSR values
+## FIXME: rm grids
 minSSR <- function(Funongrids,F0_K,Kvec,C,r,T){
-                                        # data inputs should be same size vectors
+    ## data inputs should be same size vectors
     if(length(F0_K)!=length(Kvec) | length(F0_K)!=length(C))
         stop("data inputs should be same size vectors")
     D <- ncol(Funongrids) # number of grid evaluations
@@ -142,10 +155,12 @@ minSSR <- function(Funongrids,F0_K,Kvec,C,r,T){
 ## PRECOND: Grid is of size ... (?)
 option.pricing <- function(grid, n, f0k, Kvec, C, r, T){
     ## Check input
-    if(!is.vector(F0_K) | !is.vector(Kvec) | !is.vector(C))
+    if(!is.vector(f0k) | !is.vector(Kvec) | !is.vector(C))
         stop('Data must be specified as vectors')        
-    if((length(F0_K) != length(Kvec)) | (length(F0_K) != length(C)))
-        stop('Data vectors must have the same size')
+    if(length(f0k) != length(Kvec))
+        stop('length(f0k) != length(Kvec)')
+    if (length(f0k) != length(C))
+        stop('length(f0k) != length(C))')
     
     ## Calculate valuation in initial grid points
     model.fun.on.grid <- apply(grid, 1, function(x) {
@@ -161,7 +176,9 @@ option.pricing <- function(grid, n, f0k, Kvec, C, r, T){
     minpars <-  sapply(result.grids, function(x) {
         minSSR(x, f0k, Kvec, C, r, T)$minPars
     })
-    out <- optim(par = minpars, fn = CalcGridSSR,  Funongrids_init = Funongrids_init, F0_K = F0_K, 
-                 Kvec = Kvec,  C = C, r = r, T = T)
+    out <- optim(par = minpars, fn = CalcGridSSR,
+                 Funongrids_init = Funongrids_init,
+                 f0k = f0k, Kvec = Kvec,  C = C,
+                 r = r, T = T)
     return(list(par=out$par,value=out$value))
 }
