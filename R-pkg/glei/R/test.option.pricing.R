@@ -45,8 +45,8 @@ params <- list('v1' = seq(0.8, 1.2, length=11),
                'v2' = seq(0.4, 1.2, length=11),
                'v3' = seq(0.1, 0.4, length=11)
                )  # FIXME sizes are actually c(40,16,15)
-grids <- as.matrix(expand.grid(params))
+g <- as.matrix(expand.grid(params))
 
-out <- option.pricing(grids, n, f0k, Kvec, C, r, T)
+out <- option.pricing(g, n, f0k, Kvec, C, r, T)
 cat("out$par should be the same upto 1 digit")
 print(out$par)

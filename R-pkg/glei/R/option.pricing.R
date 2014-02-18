@@ -1,3 +1,5 @@
+NR.WORKING.DAYS.PER.YEAR <- 252 
+
 ###
 ## Performs a grid search for g on column index param, to produce
 ## a new grid where: g[,param] == find.val and last column of g is interpolated
@@ -42,6 +44,8 @@ grid.search <- function(g, param, find.val) {
 
 ##
 ## gamma, sigma: distribution params
+## n: number of simulations
+## T: time to maturity
 ## 
 sim.returns.skewed.normal <- function(gamma, sigma, n, T) {
     if(n<1 | (n%%1!=0))
@@ -50,6 +54,7 @@ sim.returns.skewed.normal <- function(gamma, sigma, n, T) {
         stop("'gamma' should be positive")
     if(sigma <= 0)
         stop("'sigma' should be positive")
+    stopifnot(T > 0)
 
     sumReturns <- rep(0,n)
     ## prob(x>0)
@@ -64,7 +69,7 @@ sim.returns.skewed.normal <- function(gamma, sigma, n, T) {
         simsign <- as.numeric(runif(n) < ppos)
         
         ## element by element multiplication
-        x <- (1/sqrt(252)) * simnorm * sigma * (simsign*gamma - (1-simsign)/gamma) 
+        x <- (1/sqrt(NR.WORKING.DAYS.PER.YEAR)) * simnorm * sigma * (simsign*gamma - (1-simsign)/gamma) 
         sumReturns <- sumReturns + x
     }
     return(sumReturns)
@@ -131,28 +136,11 @@ minSSR <- function(Funongrids,F0_K,Kvec,C,r,T){
     return(list(minPars = minPars, minSSR = minSSR, SSRs = SSRs))
 }
 
-
-## Main functions that optmizes the parameters of the skewed normal option pricing formula.
-## INPUTS
-##   lb              : [vector size 3] lower bounds for l parameters, for initial grid search (F0_K,gamma,sigma)
-##   ub              : [vector size 3] upper bounds for l parameters, for initial grid search (F0_K,gamma,sigma) lb[l]<=ub[l] for all l
-##   ngrid           : [vector size 3, (n1,n2,n3)] # grid points for l parameters ngrid[l] integer>=1 forall l
-##   lb_new          : [vector size 2] lower bounds for l parameters, for second grid search (gamma,sigma)
-##   ub_new       : [vector size 2] upper bounds for l parameters, for second grid search (gamma,sigma) lb[l]<=ub[l] for all l
-##   ngrid_new  : [vector size 2, (n11,n22)] # grid points for 2 parameters ngrid[l] integer>=1 forall l
-##   n               : [integer>0] number of simulations
-##   F0_K            : [vector, size k] of interpolation values for the first parameter in 'param'
-##   Kvec            : [vector, size k] of strike prices (data)
-##   C               : [vector, size k] of call option prices (data)
-##   r               : [double>0] interest rate (annual)
-##   T               : [integer>0] days to maturity
-## OUTPUT
-##   par: vector size 2 of optimal gamma, sigma}
-##   value: double, minimum SSR value corresponding to 'par'}
-## Requires: Function `SimGridPrior', ' CalcGridSSR', 'InterpNdim' and all functions connected to them
-## TODO Nalan: re-write parameter description and PRECONDs and check them
-## F0K must be in the grid point (?)
-## PRECOND: Grid is of size ... (?)
+###
+##
+## grid: grid points of the model parameters
+## n: number of simulations for stock price evaluation
+## f0k: initial stock prices (m-column vector)
 option.pricing <- function(grid, n, f0k, Kvec, C, r, T){
     ## Check input
     if(!is.vector(f0k) | !is.vector(Kvec) | !is.vector(C))
