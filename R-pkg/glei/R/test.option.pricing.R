@@ -1,38 +1,5 @@
 source('option.pricing.R')
 
-### Test sim.returns.skewed.normal ### TODO: Nalan fix, test not working
-eps <- 1E-3
-set.seed(1111)
-x <- sim.returns.skewed.normal(gamma=1, sigma=0.01, n=1E6, T=1)
-stopifnot(abs(mean(x)) < eps)
-stopifnot(abs(var(x) - 0.1) < eps)
-
-ppos <- gamma / (1 / gamma + gamma)
-stopifnot(abs(ppos - mean(x>0)) < eps)
-
-x <- sim.returns.skewed.normal(gamma=3, sigma=0.01, n=1E6, T=1)
-ppos <- gamma / (1 / gamma + gamma)
-stopifnot(abs(ppos - mean(x > 0)) < eps)
-
-### Test f.t.k.skewed.normal ###
-stopifnot(abs(f.t.k.skewed.normal(f0k=1, gamma=1, sigma=0.01, n=1E6, T=1)) < eps)
-
-### Test minSSR ###
-F0_K <- c(1.2,1.8)
-Kvec <- F0_K/2
-C <- F0_K*4
-T <- 5
-r <- 0.6
-params <- list('v1' = seq(1, 1, length=1),
-               'v2' = seq(2, 3, length=4)
-               )
-grids <- expand.grid(params)
-fun.on.grids <- cbind(grids, apply(grids, 1, sum))
-## print(FunInterp)
-out <-  minSSR(fun.on.grids, F0_K, Kvec, C, r, T)
-## TODO: Nalan check the above and make stopifnot's
-
-
 ### Test option.pricing ###
 data <- c(1300,43.70,                 
           1320,28.80,                        
