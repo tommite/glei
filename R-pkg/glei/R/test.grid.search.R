@@ -18,4 +18,7 @@ g2 <- cbind(g2, apply(g2, 1, function(x) {x[1] + x[2]^2 + (3*x[3])^3}))
 colnames(g2)[4] <- 'v3'
 max.rows2 <- grid.search(g2, 1, 2.2) ## TODO: add stopifnot
 
-g2[sample(1:nrow(g2)),]
+## Test with permutation of rows
+g2.shuffled <- g2[sample(1:nrow(g2)),]
+max.rows2.shuffled <- grid.search(g2.shuffled, 1, 2.2)
+stopifnot(all(sort(as.numeric(as.matrix(max.rows2.shuffled))) == sort(as.numeric(as.matrix(max.rows2))))) # horror
