@@ -75,7 +75,7 @@ sim.returns.skewed.normal <- function(gamma, sigma, n, T) {
     return(sumReturns)
 }
 
-## Function to simulate returns from skewed normal distribution 
+## Function to simulate returns from skewed normal distribution
 ## inputs:
 ##   n     : [integer>0] number of simulations
 ##   T     : [integer>0] days to maturity
